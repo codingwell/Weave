@@ -1,15 +1,51 @@
-<project name="Weave" default="printinfo" basedir=".">
+<project name="Weave" default="compile" basedir=".">
+	
 	<target name="printinfo">
 		<property environment="env" />
 		<echo message="${env.BUILD_TAG}"/>
 	</target>
-<!--
+
+	<!-- Prepare the environment -->
 	<target name="init" depends="printinfo">
-		<property name="sourceDir" value="src" />
-		<property name="outputDir" value="classes" />
+		
+		<!-- Ant Contrib (Extra tasks) -->
+		<taskdef resource="net/sf/antcontrib/antcontrib.properties">
+		  <classpath>
+		    <pathelement location="lib/ant-contrib-1.0b3.jar"/>
+		  </classpath>
+		</taskdef>
+		
+		<!-- Eclipse "Special" Compiler -->
+		<if>
+			<equals arg1="${eclipse.running}" arg2="true" />
+			<then>
+				<property name="build.compiler" value="org.eclipse.jdt.core.JDTCompilerAdapter"/>
+			</then>
+		</if>
+		
+		<!-- Vars -->
+		<property name="cc.ver.src" value="1.5" /> <!-- Source code complience -->
+		<property name="cc.ver.tgt" value="1.5" /> <!-- JRE Minimum -->
+		
+		<!-- Some paths -->
+		<property name="dir.src" value="src" />
+		<property name="dir.out" value="bin" />
+		
+		<!-- Libraries -->
+		<property name="lib.parboiled" value="lib/parboiled4j-0.9.9.0" />
+		
+		<!-- Classpath -->
+		<path id="classpath.base">
+			<pathelement location="lib/junit-4.8.2.jar" />
+			<!--<pathelement location="lib/ant-junit.jar" />-->
+		</path>
+		
+		<!--
+		
 		<property name="instrumentDir" value="classes-instrumented" />
 		<property name="requiredDir" value="Required" />
 		<property name="javadocDir" value="doc" />
+		<property name="lib.parboiled" value="lib/parboiled4j-0.9.9.0" />
 		<property name="findbugs.home" value="lib/findbugs-1.3.5-rc1" />
 		<property name="cobertura.dir" value="lib/cobertura" />
 		<property name="deployDir" value="/home/webmaster/public_html/updates/bc/dev" />
@@ -22,8 +58,8 @@
 			<fileset dir="${emma.dir}">
 				<include name="*.jar"/>
 			</fileset>
-		</path>
-   
+		</path>-->
+<!--   
 		<taskdef resource="emma_ant.properties" classpathref="emma.lib" />
 		
 		
@@ -53,26 +89,32 @@
 			<pathelement location="${outputDir}" />
 			<path refid="classpath.base" />
 		</path>
+		-->
 		
+		<!--<taskdef name="junit" classname="org.apache.tools.ant.taskdefs.optional.junit.JUnitTask" classpathref="classpath.base"/>-->
 		
-		<taskdef name="junit" classname="org.apache.tools.ant.taskdefs.optional.junit.JUnitTask" classpathref="classpath.base"/>
-		
-		<taskdef classpathref="cobertura.classpath" resource="tasks.properties" />
+		<!--<taskdef classpathref="cobertura.classpath" resource="tasks.properties" />-->
 	</target>
+	
+	<!-- Cleanup Build -->
 	<target name="clean" depends="init">
-		<delete dir="${outputDir}" />
-		<delete dir="${javadocDir}"/>
+		<delete dir="${dir.out}" />
+		<!--<delete dir="${javadocDir}"/>-->
 	</target>
+	
+	<!-- Prepare Build -->
 	<target name="prepare" depends="clean">
-		<mkdir dir="${outputDir}" />
+		<mkdir dir="${dir.out}" />
 	</target>
+	
+	<!-- Build -->
 	<target name="compile" depends="prepare">
-		<javac debug="true" debuglevel="vars,lines,source" srcdir="${sourceDir}" destdir="${outputDir}">
+		<javac debug="true" debuglevel="vars,lines,source" srcdir="${dir.src}" destdir="${dir.out}" source="${cc.ver.src}" target="${cc.ver.tgt}" >
 			<classpath refid="classpath.base"/>
 		</javac>
 	</target>
 	
-	--><!-- ====================================================== -->
+	<!-- ====================================================== -->
 	<!-- JavaDocs -->
 	<!-- ====================================================== -->
 <!--	<target name="docs" depends="compile,docs-init" description="Generate JavaDocs.">
