@@ -1,3 +1,0 @@
-[submodule "lib/parboiled"]
-	path = lib/parboiled
-	url = git://github.com/sirthias/parboiled.git
