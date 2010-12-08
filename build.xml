@@ -1,3 +1,11 @@
+<!--
+Copyright 2010 Coding Well
+All rights reserved. This program and the accompanying materials 
+are made available under the terms of the Eclipse Public License v1.0 
+which accompanies this distribution, and is available at 
+http://www.eclipse.org/legal/epl-v10.html
+-->
+
 <project name="Weave" default="compile" basedir=".">
 	
 	<target name="printinfo">
@@ -24,19 +32,17 @@
 		</if>
 		
 		<!-- Vars -->
-		<property name="cc.ver.src" value="1.5" /> <!-- Source code complience -->
-		<property name="cc.ver.tgt" value="1.5" /> <!-- JRE Minimum -->
+		<property name="cc.ver.src" value="1.6" /> <!-- Source code complience -->
+		<property name="cc.ver.tgt" value="1.6" /> <!-- JRE Minimum -->
 		
 		<!-- Some paths -->
 		<property name="dir.src" value="src" />
 		<property name="dir.out" value="bin" />
 		
-		<!-- Libraries -->
-		<property name="lib.parboiled" value="lib/parboiled4j-0.9.9.0" />
-		
 		<!-- Classpath -->
 		<path id="classpath.base">
 			<pathelement location="lib/junit-4.8.2.jar" />
+			<pathelement location="lib/parboiled4j-0.9.9.0.jar" />
 			<!--<pathelement location="lib/ant-junit.jar" />-->
 		</path>
 		
