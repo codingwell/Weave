@@ -8,23 +8,24 @@ http://www.eclipse.org/legal/epl-v10.html
 
 package net.codingwell.weave.silk;
 
-import net.codingwell.weave.Parser;
 import net.codingwell.weave.silk.ast.SilkFile;
 
 import org.parboiled.BaseParser;
 import org.parboiled.Rule;
 import org.parboiled.support.*;
 
-public class SilkParser extends BaseParser<SilkFile> implements Parser
+public class SilkParser extends BaseParser<SilkFile>
 {
-	Rule File() {
-	        StringVar text = new StringVar("");
-	        StringVar temp = new StringVar("");
-	        return Sequence(
-	            OneOrMore(
-	                " "
-	            ),
-	            "Bob"
-	        );
+	public Rule File() 
+	{
+		Var<SilkFile> file = new Var<SilkFile>();
+        StringVar text = new StringVar("");
+        StringVar temp = new StringVar("");
+        return Sequence(
+            OneOrMore(
+                " "
+            ),
+            push( file.get() )
+        );
 	}
 }
