@@ -8,36 +8,53 @@ http://www.eclipse.org/legal/epl-v10.html
 
 package net.codingwell.weave;
 
-import java.util.Scanner;
-
+import java.io.IOException;
 import org.parboiled.Parboiled;
-import org.parboiled.common.StringUtils;
 import org.parboiled.errors.ErrorUtils;
-import org.parboiled.parserunners.ReportingParseRunner;
+import org.parboiled.parserunners.RecoveringParseRunner;
+import org.parboiled.parserunners.TracingParseRunner;
+import org.parboiled.support.ParseTreeUtils;
 import org.parboiled.support.ParsingResult;
 
 import net.codingwell.weave.silk.SilkParser;
 
-public class WeaveCL {
+import static net.codingwell.util.FileUtils.readFileAsString;
+
+public class WeaveCL 
+{
 
 	/**
 	 * @param args
 	 */
-	public static void main(String[] args) {
-		// TODO Auto-generated method stub
+	public static void main(String[] args) 
+	{
 		SilkParser parser = Parboiled.createParser(SilkParser.class);
 
-        while (true) {
-            System.out.print("Enter an expression (single RETURN to exit)!\n");
-            String input = new Scanner(System.in).nextLine();
-            if (StringUtils.isEmpty(input)) break;
+		//File
+        String input = null;
+		try
+		{
+			input = readFileAsString("test.silk");
+		}
+		catch (IOException e)
+		{
+			e.printStackTrace();
+		}
 
-            ParsingResult<SilkParser> result = ReportingParseRunner.run(parser.File(), input);
-
-            if (result.hasErrors()) {
-                System.out.println("\nParse Errors:\n" + ErrorUtils.printParseErrors(result));
-            }
-        }
+		if( input != null )
+		{
+			ParsingResult<SilkParser> result = RecoveringParseRunner.run(parser.File(), input);
+			//ParsingResult<SilkParser> result = TracingParseRunner.run(parser.File(), input);
+			
+        	if (result.hasErrors()) 
+        	{
+            	System.out.println("Parse Errors:\n" + ErrorUtils.printParseErrors(result));
+        	}
+        	else
+        	{
+        		System.out.println("Parse OK. :D");
+        	}
+		}
 	}
 
 }

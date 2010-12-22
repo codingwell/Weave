@@ -8,9 +8,11 @@ http://www.eclipse.org/legal/epl-v10.html
 
 package net.codingwell.weave;
 
+import org.parboiled.buffers.InputBuffer.Position;
+
 public interface ASTAttr
 {
-	int GetLine();
-	int GetChar();
+	Position GetStartPosition();
+	Position GetEndPosition();
 	String GetCode();
 }

@@ -8,27 +8,15 @@ http://www.eclipse.org/legal/epl-v10.html
 
 package net.codingwell.weave.silk.ast;
 
-import net.codingwell.weave.ASTAttr;
+import java.util.Stack;
 
-public class SilkFile implements ASTAttr
+public class SilkFile
 {
-
-	@Override
-	public int GetLine() {
-		// TODO Auto-generated method stub
-		return 0;
-	}
-
-	@Override
-	public int GetChar() {
-		// TODO Auto-generated method stub
-		return 0;
-	}
-
-	@Override
-	public String GetCode() {
-		// TODO Auto-generated method stub
-		return null;
-	}
+	Stack<SilkUsing> usings = new Stack<SilkUsing>();
 	
+	public SilkFile addUsing(SilkUsing using)
+	{
+		usings.push(using);
+		return this;
+	}
 }
