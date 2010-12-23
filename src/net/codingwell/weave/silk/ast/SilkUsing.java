@@ -6,17 +6,17 @@ import org.parboiled.buffers.InputBuffer.Position;
 
 import net.codingwell.weave.ASTAttr;
 
+/**
+ * 
+ * AST Node representing a using declaration.
+ * 
+ * @author tsuckow
+ * 
+ */
 public class SilkUsing implements ASTAttr
 {
-	public Stack<String> spec = new Stack<String>(); 
+	public Stack<String> spec = new Stack<String>();
 
-	@Override
-	public String GetCode()
-	{
-		return code;
-	}
-
-	public String code = "";
 	public Position posStart;
 	public Position posEnd;
 
@@ -25,7 +25,7 @@ public class SilkUsing implements ASTAttr
 	{
 		return posStart;
 	}
-	
+
 	@Override
 	public Position GetEndPosition()
 	{
