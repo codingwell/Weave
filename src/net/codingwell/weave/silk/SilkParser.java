@@ -51,19 +51,24 @@ public class SilkParser extends BaseParser<SilkFile>
 	}
 
 	Rule ID()
- 	{
-		return OneOrMore(
-			Sequence(
-				TestNot(
-					FirstOf(
-						WhiteSpaceChar(),
-						AnyOf(".,{}[];")
-					)
-				),
-				ANY
-			)
-		);
-	}
+	{ 
+	        return OneOrMore( 
+	                Sequence( 
+	                        TestNot( 
+	                                WhiteSpaceChar(), 
+	                                '.', 
+	                                ',', 
+	                                '{', 
+	                                '}', 
+	                                '[', 
+	                                ']', 
+	                                ';' 
+	                        ), 
+	                        ANY 
+	                ) 
+	                //AnyOf("abcdefghijklmnopqrstuvwxyz") 
+	        ); 
+	} 
 
 	Rule Number()
 	{
