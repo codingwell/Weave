@@ -18,13 +18,43 @@ import org.parboiled.support.*;
 
 public class SilkParser extends BaseParser<SilkFile>
 {
-	protected SilkParserActions act = new SilkParserActions();
+	//Todo: improve this
+	public SilkParserActions act = new SilkParserActions();
 
 	public Rule File()
 	{
 		Var<SilkFile> file = new Var<SilkFile>(new SilkFile());
-		return Sequence(Optional(WS()), ZeroOrMore(Using(file)),
+		return Sequence(Optional(WS()), ZeroOrMore(GlobalStmt(file)),
 				Optional(WS()), EOI, push(file.get()));
+	}
+	
+	public Rule GlobalStmt(Var<SilkFile> file)
+	{
+		return FirstOf(
+			Using(file),
+			Include()
+		);
+	}
+	
+	public Rule Include()
+	{
+		Var<String> path = new Var<String>();
+		return Sequence(
+			Sequence("include", WS(), '"', StringDat(), path.set(matchOrDefault("")) , '"', ';', WS() ),
+			act.Include( path.get(), matchOrDefault("").length() )
+		);
+	}
+	
+	public Rule StringDat()
+	{
+		return 
+                ZeroOrMore(
+                        //FirstOf(
+                                //Escape(),
+                                Sequence(TestNot(AnyOf("\r\n\"\\")), ANY)
+                        //)
+                ).suppressSubnodes()
+        ;
 	}
 
 	public boolean Testme(SilkUsing using, boolean set, int num)

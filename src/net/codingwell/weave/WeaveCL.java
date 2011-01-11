@@ -13,6 +13,7 @@ import org.parboiled.Parboiled;
 import org.parboiled.errors.ErrorUtils;
 import org.parboiled.parserunners.ParseRunner;
 import org.parboiled.parserunners.RecoveringParseRunner;
+import org.parboiled.support.Chars;
 import org.parboiled.support.ParsingResult;
 
 import net.codingwell.parboiled.FileIncludableInputBuffer;
@@ -44,18 +45,39 @@ public class WeaveCL
 
 		if (input != null)
 		{
-			ParseRunner<SilkParser> runner = new RecoveringParseRunner<SilkParser>(parser.File());
-			FileIncludableInputBuffer buffer = new FileIncludableInputBuffer("test.silk");
-			ParsingResult<SilkParser> result = runner.run(buffer);
-
-			if (result.hasErrors())
+			
+			
+			try
 			{
-				System.out.println("Parse Errors:\n"
-						+ ErrorUtils.printParseErrors(result));
+				FileIncludableInputBuffer buffer = new FileIncludableInputBuffer("test.silk");
+				parser.act.buffer = buffer;
+				ParseRunner<SilkParser> runner = new RecoveringParseRunner<SilkParser>(parser.File());
+			
+				ParsingResult<SilkParser> result = runner.run(buffer);
+	
+				if (result.hasErrors())
+				{
+					System.out.println("Parse Errors:\n"
+							+ ErrorUtils.printParseErrors(result));
+				}
+				else
+				{
+					System.out.println("Parse OK. :D");
+				}
+				
+				System.out.println( "File Sources:\n" );
+				
+				char c = buffer.charAt(0);
+				for(int i = 0; c != Chars.EOI; c = buffer.charAt(++i))
+				{
+					System.out.print(c);
+					System.out.print(' ');
+					System.out.println( buffer.fileAt(i).getPath() );
+				}
 			}
-			else
+			catch(Exception e)
 			{
-				System.out.println("Parse OK. :D");
+				e.printStackTrace();
 			}
 		}
 	}

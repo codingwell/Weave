@@ -1,2 +1,3 @@
 using l;
-using {d.e.f;
+include "test2.silk";
+using d.e.f;
