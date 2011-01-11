@@ -16,14 +16,16 @@ public class FileUtils
 		{
 			f = new BufferedInputStream(new FileInputStream(filePath));
 			f.read(buffer);
-		} finally
+		}
+		finally
 		{
 			if (f != null)
 			{
 				try
 				{
 					f.close();
-				} catch (IOException ignored)
+				}
+				catch (IOException ignored)
 				{
 				}
 			}

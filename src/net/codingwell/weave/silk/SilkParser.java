@@ -18,6 +18,8 @@ import org.parboiled.support.*;
 
 public class SilkParser extends BaseParser<SilkFile>
 {
+	protected SilkParserActions act = new SilkParserActions();
+
 	public Rule File()
 	{
 		Var<SilkFile> file = new Var<SilkFile>(new SilkFile());
@@ -37,7 +39,6 @@ public class SilkParser extends BaseParser<SilkFile>
 
 	public Rule Using(Var<SilkFile> file)
 	{
-		SilkParserActions act = new SilkParserActions();
 		Var<SilkUsing> using = new Var<SilkUsing>(new SilkUsing());
 		return Sequence(act.Using_Pre(using.get()),
 				Sequence("using", WS(), PackageSpec(using), SEMI()),
@@ -51,18 +52,9 @@ public class SilkParser extends BaseParser<SilkFile>
 	}
 
 	Rule ID()
- 	{
-		return OneOrMore(
-			Sequence(
-				TestNot(
-					FirstOf(
-						WhiteSpaceChar(),
-						AnyOf(".,{}[];")
-					)
-				),
-				ANY
-			)
-		);
+	{
+		return OneOrMore(Sequence(
+				TestNot(FirstOf(WhiteSpaceChar(), AnyOf(".,{}[];"))), ANY));
 	}
 
 	Rule Number()
@@ -89,7 +81,6 @@ public class SilkParser extends BaseParser<SilkFile>
 
 	protected Rule PackageSpec(Var<SilkUsing> spec)
 	{
-		SilkParserActions act = new SilkParserActions();
 		return Sequence(
 				ID(),
 				act.PackageSpec_Push(spec.get(), matchOrDefault("")),

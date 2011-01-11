@@ -1,5 +1,6 @@
 package net.codingwell.weave.silk;
 
+import net.codingwell.parboiled.FileIncludableInputBuffer;
 import net.codingwell.weave.silk.ast.SilkFile;
 import net.codingwell.weave.silk.ast.SilkUsing;
 
@@ -8,6 +9,11 @@ import org.parboiled.ContextAware;
 
 public class SilkParserActions implements ContextAware<SilkFile>
 {
+	protected FileIncludableInputBuffer getBuffer()
+	{
+		return (FileIncludableInputBuffer)getContext().getInputBuffer();
+	}
+	
 	boolean Using_Pre(SilkUsing using)
 	{
 		using.posStart = getContext().getInputBuffer().getPosition(

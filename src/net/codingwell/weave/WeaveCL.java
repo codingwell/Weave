@@ -11,9 +11,11 @@ package net.codingwell.weave;
 import java.io.IOException;
 import org.parboiled.Parboiled;
 import org.parboiled.errors.ErrorUtils;
+import org.parboiled.parserunners.ParseRunner;
 import org.parboiled.parserunners.RecoveringParseRunner;
 import org.parboiled.support.ParsingResult;
 
+import net.codingwell.parboiled.FileIncludableInputBuffer;
 import net.codingwell.weave.silk.SilkParser;
 
 import static net.codingwell.util.FileUtils.readFileAsString;
@@ -26,34 +28,35 @@ public class WeaveCL
 	 */
 	public static void main(String[] args)
 	{
-		SilkParser parser = Parboiled.createParser(SilkParser.class);
+		SilkParser parserMaster = Parboiled.createParser(SilkParser.class);
+		SilkParser parser = parserMaster.newInstance();
 
 		// File
 		String input = null;
 		try
 		{
 			input = readFileAsString("test.silk");
-		} catch (IOException e)
+		}
+		catch (IOException e)
 		{
 			e.printStackTrace();
 		}
 
 		if (input != null)
 		{
-			ParsingResult<SilkParser> result = RecoveringParseRunner.run(
-					parser.File(), input);
-			// ParsingResult<SilkParser> result =
-			// TracingParseRunner.run(parser.File(), input);
+			ParseRunner<SilkParser> runner = new RecoveringParseRunner<SilkParser>(parser.File());
+			FileIncludableInputBuffer buffer = new FileIncludableInputBuffer("test.silk");
+			ParsingResult<SilkParser> result = runner.run(buffer);
 
 			if (result.hasErrors())
 			{
 				System.out.println("Parse Errors:\n"
 						+ ErrorUtils.printParseErrors(result));
-			} else
+			}
+			else
 			{
 				System.out.println("Parse OK. :D");
 			}
 		}
 	}
-
 }
