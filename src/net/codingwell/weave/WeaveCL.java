@@ -10,13 +10,14 @@ package net.codingwell.weave;
 
 import java.io.IOException;
 import org.parboiled.Parboiled;
+import org.parboiled.common.FileUtils;
 import org.parboiled.errors.ErrorUtils;
 import org.parboiled.parserunners.ParseRunner;
 import org.parboiled.parserunners.RecoveringParseRunner;
 import org.parboiled.support.Chars;
 import org.parboiled.support.ParsingResult;
 
-import net.codingwell.parboiled.FileIncludableInputBuffer;
+import net.codingwell.parboiled.IncludableInputBuffer;
 import net.codingwell.weave.silk.SilkParser;
 
 import static net.codingwell.util.FileUtils.readFileAsString;
@@ -49,7 +50,8 @@ public class WeaveCL
 			
 			try
 			{
-				FileIncludableInputBuffer buffer = new FileIncludableInputBuffer("test.silk");
+				IncludableInputBuffer<String> buffer = new IncludableInputBuffer<String>();
+				buffer.include(0, FileUtils.readAllText("test.silk"), "test.silk", 0);//Load up first file
 				parser.act.buffer = buffer;
 				ParseRunner<SilkParser> runner = new RecoveringParseRunner<SilkParser>(parser.File());
 			
@@ -72,7 +74,7 @@ public class WeaveCL
 				{
 					System.out.print(c);
 					System.out.print(' ');
-					System.out.println( buffer.fileAt(i).getPath() );
+					System.out.println( buffer.handleAt(i) );
 				}
 			}
 			catch(Exception e)

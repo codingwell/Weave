@@ -1,20 +1,32 @@
+/*
+Copyright 2010 Coding Well
+All rights reserved. This program and the accompanying materials 
+are made available under the terms of the Eclipse Public License v1.0 
+which accompanies this distribution, and is available at 
+http://www.eclipse.org/legal/epl-v10.html
+ */
 package net.codingwell.weave.silk;
 
-import java.io.IOException;
-
-import net.codingwell.parboiled.FileIncludableInputBuffer;
+import net.codingwell.parboiled.IncludableInputBuffer;
 import net.codingwell.weave.silk.ast.SilkFile;
 import net.codingwell.weave.silk.ast.SilkUsing;
 
 import org.parboiled.Context;
 import org.parboiled.ContextAware;
+import org.parboiled.common.FileUtils;
 
+/**
+ * 
+ * @author tsuckow
+ * TODO: FileUtils in Parboiled doesn't throw exceptions, we want the error messages. 
+ */
 public class SilkParserActions implements ContextAware<SilkFile>
 {
-	public FileIncludableInputBuffer buffer = null;
-	protected FileIncludableInputBuffer getBuffer()
+	public IncludableInputBuffer<String> buffer = null;
+	private Context<SilkFile> context;
+	
+	protected IncludableInputBuffer<String> getBuffer()
 	{
-		//return (FileIncludableInputBuffer)getContext().getInputBuffer(); // THis doesn't work, its a mutableinputbuffer
 		return buffer;
 	}
 	
@@ -52,17 +64,8 @@ public class SilkParserActions implements ContextAware<SilkFile>
 
 	boolean Include( String path, int replace )
 	{
-		try
-		{
-			getBuffer().include(getContext().getCurrentIndex(), path, replace);
-		}
-		catch (IOException e)
-		{
-			//TODO: Better error handling
-			return false;
-		}
+		getBuffer().include(getContext().getCurrentIndex(), FileUtils.readAllText(path), path, replace);
+		
 		return true;
 	}
-	
-	private Context<SilkFile> context;
 }

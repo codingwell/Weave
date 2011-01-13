@@ -5,6 +5,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.Iterator;
+import java.util.Map;
 import java.util.TreeMap;
 
 import org.parboiled.buffers.InputBuffer;
@@ -13,21 +14,19 @@ import org.parboiled.support.Chars;
 
 import net.codingwell.util.FileUtils;
 
-public class FileIncludableInputBuffer implements InputBuffer
+public class IncludableInputBuffer<Handle> implements InputBuffer
 {
-	StringBuffer buffer = new StringBuffer();
-	TreeMap<Integer,File> fileIndexes = new TreeMap<Integer,File>();
+	StringBuilder buffer = new StringBuilder();
+	TreeMap<Integer,Handle> fileIndexes = new TreeMap<Integer,Handle>();
     protected int[] newlines;
 
 	/**
 	 * 
 	 * @param file
-	 * @throws Exception FIXME Throw specialized exception
 	 * 
 	 */
-	public FileIncludableInputBuffer(String file) throws Exception
+	public IncludableInputBuffer()
 	{
-		include(0,file,0);
 	}
 
 	@Override
@@ -36,7 +35,7 @@ public class FileIncludableInputBuffer implements InputBuffer
 		return 0 <= index && index < buffer.length() ? buffer.charAt(index) : Chars.EOI;
 	}
 	
-	public File fileAt(int index)
+	public Handle handleAt(int index)
 	{
 		return 0 <= index && index < buffer.length() ? fileIndexes.floorEntry(index).getValue() : null;
 	}
@@ -100,63 +99,48 @@ public class FileIncludableInputBuffer implements InputBuffer
         return true;
 	}
 	
+	public void include(int index, String dat, Handle handle, int replace)
+	{
+		include(index, dat, handle, replace, ' ');
+	}
+	
 	/**
 	 * 
 	 * @param index
 	 *
 	 * @param file
 	 * @param replace
-	 * @throws IOException FIXME specialize exception
 	 */
-	public void include(int index, String file, int replace) throws IOException
+	public void include(int index, String dat, Handle handle, int replace, char replacement)
 	{
-		String dat = FileUtils.readFileAsString(file);
 		buffer.replace( index-replace, index, StringUtils.repeat(' ', replace));//We already handled it.
 		buffer.insert( index, dat );
 		
-		Integer keysToFix = index;
-		
-		//TODO: Use ceilingEntry to get a pair.
-		//Iterate over the indexes and adjust them for what we added (and removed)
-		TreeMap<Integer,File> newFileIndexes = new TreeMap<Integer,File>();
-		for(Iterator<Integer> iter = fileIndexes.keySet().iterator(); iter.hasNext();)
+		//Iterate over the indexes and adjust them for what we added
+		TreeMap<Integer,Handle> newFileIndexes = new TreeMap<Integer,Handle>();
+		for(Map.Entry<Integer,Handle> entry : fileIndexes.entrySet())
 		{
-			Integer mykey = iter.next();
-			if( mykey >= keysToFix )
-			{/*
-				if( mykey < index + replace )
-				{
-					//We have to cut off the beginning of this (Or remove it completely)
-					Integer nextkey = fileIndexes.ceilingKey(mykey+1);
-					if( nextkey >= index + replace )
-					{
-						//Just cut off the beginning
-						newFileIndexes.put(mykey+dat.length(),fileIndexes.get(mykey));
-					}
-				}
-				else*/
-				{
-					//Just move it over
-					newFileIndexes.put(mykey/*-replace*/+dat.length(),fileIndexes.get(mykey));
-				}
+			if( entry.getKey() >= index )
+			{
+				newFileIndexes.put( entry.getKey()+dat.length(), entry.getValue() );
 			}
 			else
 			{   //Before what we included, no change.
-				newFileIndexes.put(mykey,fileIndexes.get(mykey));
+				newFileIndexes.put( entry.getKey(), entry.getValue() );
 			}
 		}
 		
 		fileIndexes = newFileIndexes;
 		
 		//Split the current file
-		Integer sourcekey = fileIndexes.floorKey(index);
-		if( sourcekey != null )
+		Map.Entry<Integer, Handle> includer = fileIndexes.floorEntry(index);
+		if( includer != null )
 		{
-			fileIndexes.put(index + dat.length(), fileIndexes.get(sourcekey));
+			fileIndexes.put(index + dat.length(), includer.getValue() );
 		}
 		
 		//Finally, add the file we just included.
-		fileIndexes.put(index,new File(file));
+		fileIndexes.put( index, handle );
 		
 		newlines = null;//Invalidate
 	}
