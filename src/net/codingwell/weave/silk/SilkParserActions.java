@@ -64,7 +64,7 @@ public class SilkParserActions implements ContextAware<SilkFile>
 
 	boolean Include( String path, int replace )
 	{
-		getBuffer().include(getContext().getCurrentIndex(), FileUtils.readAllText(path), path, replace);
+		getBuffer().include(getContext().getCurrentIndex(), Preprocessor.StripComments( FileUtils.readAllText(path) ), path, replace);
 		
 		return true;
 	}

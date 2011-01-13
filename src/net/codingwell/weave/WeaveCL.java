@@ -18,6 +18,7 @@ import org.parboiled.support.Chars;
 import org.parboiled.support.ParsingResult;
 
 import net.codingwell.parboiled.IncludableInputBuffer;
+import net.codingwell.weave.silk.Preprocessor;
 import net.codingwell.weave.silk.SilkParser;
 
 import static net.codingwell.util.FileUtils.readFileAsString;
@@ -51,7 +52,7 @@ public class WeaveCL
 			try
 			{
 				IncludableInputBuffer<String> buffer = new IncludableInputBuffer<String>();
-				buffer.include(0, FileUtils.readAllText("test.silk"), "test.silk", 0);//Load up first file
+				buffer.include(0, Preprocessor.StripComments( FileUtils.readAllText("test.silk") ), "test.silk", 0);//Load up first file
 				parser.act.buffer = buffer;
 				ParseRunner<SilkParser> runner = new RecoveringParseRunner<SilkParser>(parser.File());
 			
