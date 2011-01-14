@@ -24,6 +24,8 @@ import org.parboiled.buffers.InputBuffer;
 import org.parboiled.common.StringUtils;
 import org.parboiled.support.Chars;
 
+import static org.parboiled.common.Preconditions.*;
+
 public class IncludableInputBuffer<Handle> implements InputBuffer
 {
 	StringBuilder buffer = new StringBuilder();
@@ -63,11 +65,7 @@ public class IncludableInputBuffer<Handle> implements InputBuffer
 	public String extractLine(int lineNumber)
 	{
 		buildNewlines();
-		//TODO: Update when parboiled updated
-        if(!(0 < lineNumber && lineNumber <= newlines.length + 1))
-        {
-        	throw new IllegalArgumentException();
-        }
+		checkArgument(0 < lineNumber && lineNumber <= newlines.length + 1);
         int start = lineNumber > 1 ? newlines[lineNumber - 2] + 1 : 0;
         int end = lineNumber <= newlines.length ? newlines[lineNumber - 1] : buffer.length();
         if (charAt(end - 1) == '\r') end--;

@@ -118,6 +118,7 @@ public class SilkParser extends BaseParser<SilkFile>
 						act.PackageSpec_Push(spec.get(), matchOrDefault("")))));
 	}
 
+	@Label("Whitespace")
 	public Rule WS()
 	{
 		return OneOrMore(WhiteSpaceChar());
@@ -132,7 +133,7 @@ public class SilkParser extends BaseParser<SilkFile>
 	 * 
 	 * @return Rule
 	 */
-	@Label("Whitespace")
+	@Label("Single Whitespace")
 	Rule WhiteSpaceChar()
 	{
 		return AnyOf(" \n\r\t\f");

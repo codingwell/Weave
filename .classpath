@@ -2,10 +2,16 @@
 <classpath>
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
-	<classpathentry kind="lib" path="lib/parboiled4j-0.9.9.0.jar">
+	<classpathentry kind="lib" path="lib/parboiled-core-0.10.0.jar">
 		<attributes>
-			<attribute name="javadoc_location" value="jar:platform:/resource/weave/lib/parboiled4j-0.9.9.0-javadoc.jar!/"/>
+			<attribute name="javadoc_location" value="jar:platform:/resource/Weave/lib/parboiled-core-0.10.0-javadoc.zip!/"/>
 		</attributes>
 	</classpathentry>
+	<classpathentry kind="lib" path="lib/parboiled-java-0.10.0.jar">
+		<attributes>
+			<attribute name="javadoc_location" value="jar:platform:/resource/Weave/lib/parboiled-java-0.10.0-javadoc.zip!/"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="lib/asm-all-3.3.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
