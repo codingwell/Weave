@@ -122,9 +122,9 @@ public class IncludableInputBuffer<Handle> implements InputBuffer
 		Integer fileindex = entry.getKey();
 		Position file = getPosition(fileindex);
 		Position filechunk = entry.getValue().localStart;
-		int localline = ch.line-file.line;
-		int localcol  = (localline==0)?(ch.column-file.column):ch.column-1;
-		return new Position(localline + filechunk.line,localcol + filechunk.column);
+		int localline = ch.line - file.line + filechunk.line;
+		int localcol  = (localline==0)?(ch.column-file.column + filechunk.column):ch.column;
+		return new Position(localline,localcol);
 	}
 	
 	// returns the zero based input line number the character with the given index is found in

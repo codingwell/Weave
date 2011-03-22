@@ -12,12 +12,13 @@ import java.io.IOException;
 import org.parboiled.Parboiled;
 import org.parboiled.buffers.InputBuffer.Position;
 import org.parboiled.common.FileUtils;
-import org.parboiled.errors.ErrorUtils;
+
 import org.parboiled.parserunners.ParseRunner;
 import org.parboiled.parserunners.RecoveringParseRunner;
 import org.parboiled.support.Chars;
 import org.parboiled.support.ParsingResult;
 
+import net.codingwell.parboiled.ErrorUtils;
 import net.codingwell.parboiled.IncludableInputBuffer;
 import net.codingwell.weave.silk.Preprocessor;
 import net.codingwell.weave.silk.SilkParser;
@@ -62,7 +63,7 @@ public class WeaveCL
 				if (result.hasErrors())
 				{
 					System.out.println("Parse Errors:\n"
-							+ ErrorUtils.printParseErrors(result));
+							+ ErrorUtils.printParseErrors(result.parseErrors,buffer));
 				}
 				else
 				{
