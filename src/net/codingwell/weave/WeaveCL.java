@@ -10,6 +10,7 @@ package net.codingwell.weave;
 
 import java.io.IOException;
 import org.parboiled.Parboiled;
+import org.parboiled.buffers.InputBuffer.Position;
 import org.parboiled.common.FileUtils;
 import org.parboiled.errors.ErrorUtils;
 import org.parboiled.parserunners.ParseRunner;
@@ -75,7 +76,10 @@ public class WeaveCL
 				{
 					System.out.print(c);
 					System.out.print(' ');
-					System.out.println( buffer.handleAt(i) );
+					System.out.print( buffer.handleAt(i) );
+					Position pos = buffer.getLocalPosition(i);
+					System.out.print( " : " + pos.line + " : " + pos.column );
+					System.out.println();
 				}
 			}
 			catch(Exception e)
