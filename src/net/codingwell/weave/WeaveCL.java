@@ -10,13 +10,13 @@ package net.codingwell.weave;
 
 import java.io.IOException;
 import org.parboiled.Parboiled;
-import org.parboiled.buffers.InputBuffer.Position;
 import org.parboiled.common.FileUtils;
 
 import org.parboiled.parserunners.ParseRunner;
 import org.parboiled.parserunners.RecoveringParseRunner;
 import org.parboiled.support.Chars;
 import org.parboiled.support.ParsingResult;
+import org.parboiled.support.Position;
 
 import net.codingwell.parboiled.ErrorUtils;
 import net.codingwell.parboiled.IncludableInputBuffer;

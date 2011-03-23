@@ -23,6 +23,8 @@ import java.util.TreeMap;
 import org.parboiled.buffers.InputBuffer;
 import org.parboiled.common.StringUtils;
 import org.parboiled.support.Chars;
+import org.parboiled.support.IndexRange;
+import org.parboiled.support.Position;
 
 import static org.parboiled.common.Preconditions.*;
 
@@ -214,4 +216,16 @@ public class IncludableInputBuffer<Handle> implements InputBuffer
             }
         }
     }
+
+	@Override
+	public String extract(IndexRange range)
+	{
+		return extract(range.start,range.end);
+	}
+
+	@Override
+	public int getOriginalIndex(int index)
+	{
+		return index;
+	}
 }

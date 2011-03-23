@@ -2,14 +2,23 @@ package net.codingwell.parboiled;
 
 import java.util.List;
 
-import org.parboiled.buffers.InputBuffer.Position;
+import org.parboiled.buffers.InputBuffer;
 import org.parboiled.common.StringUtils;
 import org.parboiled.errors.DefaultInvalidInputErrorFormatter;
 import org.parboiled.errors.InvalidInputError;
 import org.parboiled.errors.ParseError;
+import org.parboiled.support.Position;
 
 import static org.parboiled.common.Preconditions.*;
 
+/**
+ * 
+ * Thrown together a way to print errors from IncludableInputBuffer
+ * This is a temporary hack as eventually errors will be translated into a Class that can be passes around
+ * 
+ * @author tsuckow
+ *
+ */
 public class ErrorUtils
 {
     /**
@@ -37,10 +46,11 @@ public class ErrorUtils
         String message = error.getErrorMessage() != null ? error.getErrorMessage() :
                 error instanceof InvalidInputError ?
                         formatter.format((InvalidInputError) error) : error.getClass().getSimpleName();
-        int ch = error.getInputBuffer().charAt(0);
-        System.out.println("Grr: " + ch);
+        InputBuffer ebuffer = error.getInputBuffer();
         return printErrorMessage("%s %s(line %s, col %s):", message,
-                error.getStartIndex(), error.getEndIndex(), buffer);
+        		ebuffer.getOriginalIndex(error.getStartIndex()),
+        		ebuffer.getOriginalIndex(error.getEndIndex()),
+        		buffer);
     }
     
     public static String printErrorMessage(String format, String errorMessage, int startIndex, int endIndex, IncludableInputBuffer<String> buffer)
