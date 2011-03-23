@@ -29,17 +29,23 @@ import org.parboiled.support.Position;
 import static org.parboiled.common.Preconditions.*;
 
 /**
- * @author tsuckow
- *
  * Allows for files to be included inside of each other yet still be able to
  * retrieve the characters origin. The file origin is specified by a handle
  * provided when the file is added. 
  *
  * @param <Handle> Handle type for files.
+ * 
+ * @author tsuckow
  */
 public class IncludableInputBuffer<Handle> implements InputBuffer
 {
 	StringBuilder buffer = new StringBuilder();
+	
+	/**
+	 * Entry for each file chunk
+	 * 
+	 * @author tsuckow
+	 */
 	private class IndexEntry
 	{
 		Handle handle;
@@ -51,6 +57,7 @@ public class IncludableInputBuffer<Handle> implements InputBuffer
 			this.localStart = pos;
 		}
 	}
+	//Sorted map of file chunks
 	TreeMap<Integer,IndexEntry> fileIndexes = new TreeMap<Integer,IndexEntry>();
     protected int[] newlines;
 
@@ -67,6 +74,12 @@ public class IncludableInputBuffer<Handle> implements InputBuffer
 		return 0 <= index && index < buffer.length() ? buffer.charAt(index) : Chars.EOI;
 	}
 	
+	/**
+	 * Returns the handle for the character at index
+	 * 
+	 * @param index Index of character to return handle for
+	 * @return Handle of file for specified index
+	 */
 	public Handle handleAt(int index)
 	{
 		return 0 <= index && index < buffer.length() ? fileIndexes.floorEntry(index).getValue().handle : null;
@@ -129,7 +142,7 @@ public class IncludableInputBuffer<Handle> implements InputBuffer
 		return new Position(localline,localcol);
 	}
 	
-	// returns the zero based input line number the character with the given index is found in
+	// Returns the zero based input line number the character with the given index is found in
     protected static int getLine0(int[] newlines, int index) {
         int j = Arrays.binarySearch(newlines, index);
         return j >= 0 ? j : -(j + 1);
@@ -148,17 +161,32 @@ public class IncludableInputBuffer<Handle> implements InputBuffer
         return true;
 	}
 	
+	/*
+	 * Include another file into this buffer.
+	 * 
+	 * Characters before the index can be replaced with a space (convenient for removing include directives)
+	 * 
+	 * @param index Index to include data at.
+	 * @param dat Data to be included.
+	 * @param handle Handle to represent the added file
+	 * @param replace Number of characters to be replaced before index
+	 */
 	public void include(int index, String dat, Handle handle, int replace)
 	{
 		include(index, dat, handle, replace, ' ');
 	}
 	
+	
 	/**
+	 * Include another file into this buffer.
 	 * 
-	 * @param index
-	 *
-	 * @param file
-	 * @param replace
+	 * Characters before the index can be replaced (convenient for removing include directives)
+	 * 
+	 * @param index Index to include data at.
+	 * @param dat Data to be included.
+	 * @param handle Handle to represent the added file
+	 * @param replace Number of characters to be replaced before index
+	 * @param replacement Replacement character
 	 */
 	public void include(int index, String dat, Handle handle, int replace, char replacement)
 	{
@@ -198,6 +226,7 @@ public class IncludableInputBuffer<Handle> implements InputBuffer
 	
 	/**
 	 * Constructs newline data for the buffer
+	 * Creates an array of indexes of newlines
 	 */
 	protected void buildNewlines() {
         if (newlines == null) {
