@@ -17,6 +17,7 @@ import org.parboiled.parserunners.RecoveringParseRunner;
 import org.parboiled.support.Chars;
 import org.parboiled.support.ParsingResult;
 
+import net.codingwell.labs.CalcRunner;
 import net.codingwell.parboiled.IncludableInputBuffer;
 import net.codingwell.weave.silk.Preprocessor;
 import net.codingwell.weave.silk.SilkParser;
@@ -31,6 +32,9 @@ public class WeaveCL
 	 */
 	public static void main(String[] args)
 	{
+		CalcRunner cr = new CalcRunner();
+		cr.Run("1+2");
+		
 		SilkParser parserMaster = Parboiled.createParser(SilkParser.class);
 		SilkParser parser = parserMaster.newInstance();
 
