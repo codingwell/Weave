@@ -9,7 +9,7 @@ package net.codingwell.weave.silk.ast;
 
 import java.util.Stack;
 
-import org.parboiled.buffers.InputBuffer.Position;
+import org.parboiled.support.Position;
 
 import net.codingwell.weave.ASTAttr;
 

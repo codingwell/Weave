@@ -24,15 +24,15 @@ public class SilkParser extends BaseParser<SilkFile>
 	public Rule File()
 	{
 		Var<SilkFile> file = new Var<SilkFile>(new SilkFile());
-		return Sequence(Optional(WS()), ZeroOrMore(GlobalStmt(file)),
-				Optional(WS()), EOI, push(file.get()));
+		return Sequence( ZeroOrMore(GlobalStmt(file)), EOI, push(file.get()) );
 	}
 	
 	public Rule GlobalStmt(Var<SilkFile> file)
 	{
 		return FirstOf(
 			Using(file),
-			Include()
+			Include(),
+			WS()
 		);
 	}
 	
@@ -40,7 +40,7 @@ public class SilkParser extends BaseParser<SilkFile>
 	{
 		Var<String> path = new Var<String>();
 		return Sequence(
-			Sequence("include", WS(), '"', StringDat(), path.set(matchOrDefault("")) , '"', ';', WS() ),
+			Sequence("include", WS(), '"', StringDat(), path.set(matchOrDefault("")) , '"', ';' ),
 			act.Include( path.get(), matchOrDefault("").length() )
 		);
 	}

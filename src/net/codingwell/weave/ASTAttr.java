@@ -8,7 +8,7 @@ http://www.eclipse.org/legal/epl-v10.html
 
 package net.codingwell.weave;
 
-import org.parboiled.buffers.InputBuffer.Position;
+import org.parboiled.support.Position;
 
 public interface ASTAttr
 {
