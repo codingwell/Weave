@@ -257,4 +257,18 @@ public class IncludableInputBuffer<Handle> implements InputBuffer
 	{
 		return index;
 	}
+	
+	public void debugOutput()
+	{
+		char c = charAt(0);
+		for(int i = 0; c != Chars.EOI; c = charAt(++i))
+		{
+			System.out.print(c);
+			System.out.print(' ');
+			System.out.print( handleAt(i) );
+			Position pos = getLocalPosition(i);
+			System.out.print( " : " + pos.line + " : " + pos.column );
+			System.out.println();
+		}
+	}
 }
