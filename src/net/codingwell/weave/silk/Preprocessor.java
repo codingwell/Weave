@@ -12,6 +12,7 @@ public class Preprocessor
 	 */
 	static public String StripComments(String input)
 	{
+		if( input == null ) return "";
 		boolean eol = false;
 		boolean block = false;
 		StringBuilder output = new StringBuilder(input);

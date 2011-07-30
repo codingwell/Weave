@@ -36,7 +36,7 @@ public class WeaveCL
 	{
 		CalcRunner cr = new CalcRunner();
 		cr.Run();
-		
+		/*
 		SilkParser parserMaster = Parboiled.createParser(SilkParser.class);
 		SilkParser parser = parserMaster.newInstance();
 
@@ -91,6 +91,6 @@ public class WeaveCL
 			{
 				e.printStackTrace();
 			}
-		}
+		}*/
 	}
 }

@@ -190,6 +190,7 @@ public class IncludableInputBuffer<Handle> implements InputBuffer
 	 */
 	public void include(int index, String dat, Handle handle, int replace, char replacement)
 	{
+		if( index > length() ) return;
 		buffer.replace( index-replace, index, StringUtils.repeat(' ', replace));//We already handled it.
 		buffer.insert( index, dat );
 		
@@ -270,5 +271,10 @@ public class IncludableInputBuffer<Handle> implements InputBuffer
 			System.out.print( " : " + pos.line + " : " + pos.column );
 			System.out.println();
 		}
+	}
+	
+	public int length()
+	{
+		return buffer.length();
 	}
 }
