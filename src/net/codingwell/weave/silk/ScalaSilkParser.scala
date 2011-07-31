@@ -26,19 +26,16 @@ class ScalaSilkParser(val buffer: IncludableInputBuffer[String]) extends Parser
   
   def TempInclude = rule { Include ~ push(ASTInclude) }
   
-  def DoInclude(s:ASTString, r:ASTIndexRange):Unit =
+  def DoInclude(s:ASTString, r:ASTIndexRange, context:Context[Any]):Unit =
   {
-    val len = buffer.length()
-    println( "DOINCLUDE: " + s.text + "  " + r.range.toString() + " " + buffer.length() )
-    buffer.include( r.range.end, Preprocessor.StripComments( FileUtils.readAllText(s.text) ), s.text, r.range.length());
-    println(s.text) 
-    if( len != buffer.length() )
-    {
-       println( "DOINCLUDE CHANGED: " + buffer.length() )
-    }
+    val start = context.getInputBuffer().getOriginalIndex( r.range.start )
+    val end = context.getInputBuffer().getOriginalIndex( r.range.end )
+    println( "DOINCLUDE: " + s.text + "  " + r.range.toString() )
+    buffer.include( end, Preprocessor.StripComments( FileUtils.readAllText(s.text) ), s.text, end-start);
+    println(s.text)
   }
   
-  def Include = rule { IncludeInternal ~>> ASTIndexRange ~~% DoInclude _ }
+  def Include = rule { IncludeInternal ~>> ASTIndexRange ~~% withContext(DoInclude _) }
   def IncludeInternal = rule { "include" ~ WhiteSpace ~ SilkString ~ SEMI }
   
   def Using = rule { "using" ~ WhiteSpace ~ PackageSpec ~ SEMI ~ push(ASTUsing) }
@@ -54,7 +51,7 @@ class ScalaSilkParser(val buffer: IncludableInputBuffer[String]) extends Parser
   def Integer = rule { oneOrMore( Digit ) }
   def Digit = rule { "0"-"9" }
   
-  def SilkString = rule { "\"" ~ zeroOrMore( !anyOf("\r\n\"\\") ~ ANY ) ~> ASTString ~ "\"" ~ WhiteSpace }//OWhiteSpace
+  def SilkString = rule { "\"" ~ zeroOrMore( !anyOf("\r\n\"\\") ~ ANY ) ~> ASTString ~ "\"" ~ OWhiteSpace }
   def WhiteSpace: Rule0 = rule { oneOrMore(anyOf(" \n\r\t\f")) }
   def OWhiteSpace: Rule0 = rule { optional( WhiteSpace ) }
 }
