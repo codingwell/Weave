@@ -8,9 +8,8 @@ http://www.eclipse.org/legal/epl-v10.html
 
 package net.codingwell.weave.verilog;
 
-import net.codingwell.weave.verilog.ast.VerilogFile;
+//TODO: PORT to scala
 
-import org.parboiled.BaseParser;
 import org.parboiled.Rule;
 
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
@@ -21,7 +20,7 @@ import sun.reflect.generics.reflectiveObjects.NotImplementedException;
  * time_unit ::= s | ms | us | ns | ps | fs 
  */
 
-public class VerilogParser extends BaseParser<VerilogFile>
+public class VerilogParser
 {
 	protected Rule WhiteSpace()
 	{
@@ -100,10 +99,7 @@ public class VerilogParser extends BaseParser<VerilogFile>
 	
 	protected Rule CompilerDirective()
 	{
-		//TODO:
-		return Sequence(
-			'`',
-			"define"
-		);
+		throw new NotImplementedException();
+
 	}
 }

@@ -14,7 +14,7 @@ import org.parboiled.support.IndexRange
 import org.parboiled.Context
 import org.parboiled.common.FileUtils
 
-class ScalaSilkParser(val buffer: IncludableInputBuffer[String]) extends Parser
+class SilkParser(val buffer: IncludableInputBuffer[String]) extends Parser
 {
 
   sealed abstract class AstNode
