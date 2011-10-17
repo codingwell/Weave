@@ -1,0 +1,25 @@
+apply plugin: 'scala'
+apply plugin: 'eclipse'
+
+defaultTasks 'compileScala'
+
+repositories {
+	mavenCentral()
+	mavenRepo name:'scala-releases', urls:'http://scala-tools.org/repo-releases/'
+}
+
+scalaVersion = '2.9.1'
+parboiledVersion = '1.0.2'
+
+dependencies {
+	scalaTools "org.scala-lang:scala-compiler:$scalaVersion",
+	  "org.scala-lang:scala-library:$scalaVersion"
+  
+	compile "org.scala-lang:scala-library:$scalaVersion",
+	"org.parboiled:parboiled-scala:$parboiledVersion"
+  
+	testCompile "junit:junit:4.5",
+//	  "org.scala-tools.testing:specs:1.6.1",
+	  "org.scala-lang:scala-compiler:$scalaVersion",
+	"org.parboiled:parboiled-scala:$parboiledVersion"
+}

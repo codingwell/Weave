@@ -1,3 +1,11 @@
 bin/
+build/
 .directory
+.gradle
+.cache
+
+#Eclipse
+.settings
+.project
 .scala_dependencies
+.classpath
