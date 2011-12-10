@@ -1,6 +1,9 @@
 apply plugin: 'scala'
 apply plugin: 'eclipse'
 
+sourceCompatibility = 1.6
+eclipseClasspath.containers += ["org.scala-ide.sdt.launching.SCALA_CONTAINER"]
+
 defaultTasks 'compileScala'
 
 repositories {
