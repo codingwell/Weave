@@ -89,7 +89,7 @@ public class IncludableInputBuffer<Handle> implements InputBuffer
 	public String extract(int start, int end)
 	{
 		if (start < 0) start = 0;
-        if (end >= buffer.length()) end = buffer.length();
+        if (end > buffer.length()) end = buffer.length();
         if (end <= start) return "";
         return buffer.substring(start, end);
 	}
