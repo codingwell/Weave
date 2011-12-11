@@ -9,3 +9,6 @@ build/
 .project
 .scala_dependencies
 .classpath
+
+#Vim
+*.swp

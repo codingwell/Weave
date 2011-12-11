@@ -1,5 +1,11 @@
 apply plugin: 'scala'
 apply plugin: 'eclipse'
+apply plugin: 'application'
+
+mainClassName = "net.codingwell.weave.WeaveCL"
+
+sourceCompatibility = 1.6
+eclipseClasspath.containers += ["org.scala-ide.sdt.launching.SCALA_CONTAINER"]
 
 defaultTasks 'compileScala'
 
@@ -10,16 +16,28 @@ repositories {
 
 scalaVersion = '2.9.1'
 parboiledVersion = '1.0.2'
+karafVersion = '2.2.4'
 
 dependencies {
 	scalaTools "org.scala-lang:scala-compiler:$scalaVersion",
 	  "org.scala-lang:scala-library:$scalaVersion"
-  
+
 	compile "org.scala-lang:scala-library:$scalaVersion",
-	"org.parboiled:parboiled-scala:$parboiledVersion"
+	"org.parboiled:parboiled-scala:$parboiledVersion",
+//   "org.apache.karaf.shell:org.apache.karaf.shell.console:$karafVersion",
+   "com.github.scopt:scopt_2.9.1:1.1.2",
+   "org.fusesource.jansi:jansi:1.7"
   
 	testCompile "junit:junit:4.5",
 //	  "org.scala-tools.testing:specs:1.6.1",
 	  "org.scala-lang:scala-compiler:$scalaVersion",
 	"org.parboiled:parboiled-scala:$parboiledVersion"
 }
+
+run {
+   if ( project.hasProperty('args') ) {
+       args project.args.split('\\s+')
+   }
+}
+
+// vim: syntax=groovy
