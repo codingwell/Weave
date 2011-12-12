@@ -1,5 +1,8 @@
 apply plugin: 'scala'
 apply plugin: 'eclipse'
+apply plugin: 'application'
+
+mainClassName = "net.codingwell.weave.WeaveCL"
 
 sourceCompatibility = 1.6
 eclipseClasspath.containers += ["org.scala-ide.sdt.launching.SCALA_CONTAINER"]
@@ -26,3 +29,11 @@ dependencies {
 	  "org.scala-lang:scala-compiler:$scalaVersion",
 	"org.parboiled:parboiled-scala:$parboiledVersion"
 }
+
+run {
+   if ( project.hasProperty('args') ) {
+       args project.args.split('\\s+')
+   }
+}
+
+// vim: syntax=groovy
