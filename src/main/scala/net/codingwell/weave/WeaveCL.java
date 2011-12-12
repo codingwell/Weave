@@ -7,6 +7,7 @@
 package net.codingwell.weave;
 
 import net.codingwell.labs.CalcRunner;
+import net.codingwell.jansi.AnsiConsole;
 
 public class WeaveCL
 {
@@ -16,6 +17,10 @@ public class WeaveCL
 	 */
 	public static void main(String[] args)
 	{
+      WeaveConfig config = new WeaveConfig();
+      if( !CommandLineParser.parse( args, config ) ) return;
+
+      AnsiConsole.systemInstall( config.forcecolor() );
 		CalcRunner cr = new CalcRunner();
 		cr.Run();
 	}
