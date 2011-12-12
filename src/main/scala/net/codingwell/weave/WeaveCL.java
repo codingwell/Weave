@@ -7,6 +7,10 @@
 package net.codingwell.weave;
 
 import net.codingwell.labs.CalcRunner;
+import net.codingwell.labs.LoggedA;
+import net.codingwell.labs.logging.ConsoleLogger;
+import net.codingwell.labs.logging.Logger;
+
 import net.codingwell.jansi.AnsiConsole;
 
 public class WeaveCL
@@ -21,6 +25,11 @@ public class WeaveCL
       if( !CommandLineParser.parse( args, config ) ) return;
 
       AnsiConsole.systemInstall( config.forcecolor() );
+
+		Logger logr = new ConsoleLogger();
+		LoggedA la = new LoggedA(logr);
+		la.doStuff();
+
 		CalcRunner cr = new CalcRunner();
 		cr.Run();
 	}
