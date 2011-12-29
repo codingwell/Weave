@@ -41,6 +41,7 @@ public class AnsiConsole
 
    public static OutputStream wrapOutputStream(final OutputStream stream, boolean force)
    {
+	   System.out.println("Wrap");
         // If the jansi.strip property is set, then we just strip the
         // the ansi escapes.
         if( Boolean.getBoolean("jansi.strip") ) {
@@ -48,6 +49,9 @@ public class AnsiConsole
         }
 
 		String os = System.getProperty("os.name");
+		
+		System.out.println("OS: " + os);
+		
 		if( os.startsWith("Windows") ) {
 			
 			// On windows we know the console does not interpret ANSI codes..
@@ -59,7 +63,7 @@ public class AnsiConsole
 			}
 			
 			// Use the ANSIOutputStream to strip out the ANSI escape sequences.
-			return new AnsiOutputStream(stream);
+			if(!force) return new AnsiOutputStream(stream);
 		}
 		
 		// We must be on some unix variant..
