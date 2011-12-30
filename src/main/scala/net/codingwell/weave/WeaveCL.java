@@ -82,7 +82,7 @@ System.err.println(e.getMessage());
 	}
 	
 	 private static ServletHolder initAtmosphereServlet(String maxInactivityLimit) {
-		 
+		/* 
 		 AtmosphereServlet atmosphereServlet = new AtmosphereServlet();
 	        atmosphereServlet.addInitParameter("com.sun.jersey.config.property.packages", ATMOSPHERE_RESOURCES);
 	        atmosphereServlet.addInitParameter("com.sun.jersey.spi.container.ResourceFilter", "org.atmosphere.core.AtmosphereFilter");
@@ -92,8 +92,8 @@ System.err.println(e.getMessage());
 	        atmosphereServlet.addInitParameter(ApplicationConfig.MAX_INACTIVE, (maxInactivityLimit.isEmpty()) ? DEFAULT_MAX_INACTIVITY_LIMIT : maxInactivityLimit);
 		 //atmosphereServlet.setCometSupport(new JettyCometSupport(atmosphereServlet.getAtmosphereConfig()));
 		 ServletHolder atmosphereServletHolder = new ServletHolder(atmosphereServlet);
-		 
-       /*
+		 */
+       
 	        ServletHolder atmosphereServletHolder = new ServletHolder(AtmosphereServlet.class);
 	        atmosphereServletHolder.setInitParameter("com.sun.jersey.config.property.packages", ATMOSPHERE_RESOURCES);
 	        atmosphereServletHolder.setInitParameter("com.sun.jersey.spi.container.ResourceFilter", "org.atmosphere.core.AtmosphereFilter");
@@ -101,7 +101,7 @@ System.err.println(e.getMessage());
 	        atmosphereServletHolder.setInitParameter(ApplicationConfig.WEBSOCKET_SUPPORT, "true");
 	        atmosphereServletHolder.setInitParameter(ApplicationConfig.PROPERTY_NATIVE_COMETSUPPORT, "true");
 	        atmosphereServletHolder.setInitParameter(ApplicationConfig.MAX_INACTIVE, (maxInactivityLimit.isEmpty()) ? DEFAULT_MAX_INACTIVITY_LIMIT : maxInactivityLimit);
-      */
+      
 	        return atmosphereServletHolder;
 	    }
 }
