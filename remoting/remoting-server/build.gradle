@@ -1,0 +1,26 @@
+
+atmosphereVersion = '0.8.2'
+jettyVersion      = '8.1.0.RC1'
+jerseyVersion     = '1.11'
+
+dependencies {
+   compile "org.atmosphere:atmosphere-jersey:$atmosphereVersion",
+      "org.eclipse.jetty:jetty-servlet:$jettyVersion",
+      "org.eclipse.jetty:jetty-websocket:$jettyVersion",
+      "com.sun.jersey:jersey-core:$jerseyVersion",
+      "com.sun.jersey:jersey-server:$jerseyVersion",
+      "com.sun.jersey:jersey-servlet:$jerseyVersion",
+      "org.slf4j:slf4j-simple:1.6.4",
+      "com.google.inject:guice:3.0"
+
+   testCompile "junit:junit:4.5",
+      //"org.scala-tools.testing:specs:1.6.1",
+//      "org.scala-lang:scala-compiler:$scalaVersion",
+      "org.parboiled:parboiled-scala:$parboiledVersion"
+}
+
+configurations {
+   all*.exclude group: 'org.atmosphere', module: 'atmosphere-compat-jetty'
+}
+
+// vim: syntax=groovy

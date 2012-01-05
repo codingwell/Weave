@@ -1,0 +1,9 @@
+
+apply plugin: 'application'
+mainClassName ='Testing'
+
+dependencies {
+   compile project(':remoting:remoting-server')
+}
+
+// vim: syntax=groovy

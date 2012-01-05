@@ -1,0 +1,6 @@
+include 'core',
+   'core-api',
+   'remoting:remoting-shared',
+   'remoting:remoting-client',
+   'remoting:remoting-server',
+   'testing'
