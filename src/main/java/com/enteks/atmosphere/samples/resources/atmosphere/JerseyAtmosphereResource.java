@@ -5,12 +5,14 @@ import org.atmosphere.cpr.Broadcaster;
 import org.atmosphere.jersey.Broadcastable;
 
 import javax.ws.rs.*;
+import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 
 @Path("/")
 public class JerseyAtmosphereResource {
 
-
+	@Context
+	protected String someParam;
     /*
      * Subscribes listener to the broadcast of clicker responses
      * @PARAM {channel} is the path parameter representing the unique ID generated when the
@@ -21,6 +23,7 @@ public class JerseyAtmosphereResource {
     @Suspend(listeners = {AtmosphereListener.class}, outputComments = true)
     public Broadcastable subscribe(@PathParam("channel") Broadcaster channel) {
     	System.out.println("Subscribe" + channel.toString());
+      channel.broadcast("Hello");
         return new Broadcastable(channel);
     }
 
