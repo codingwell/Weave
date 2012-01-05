@@ -4,19 +4,20 @@
 // which accompanies this distribution, and is available at
 // http://www.eclipse.org/legal/epl-v10.html
 
-package net.codingwell.weave.remoting.server.resources;
+package net.codingwell.weave.remoting.server.resources
 
-import org.atmosphere.annotation.Broadcast;
-import org.atmosphere.annotation.Suspend;
-import org.atmosphere.cpr.Broadcaster;
-import org.atmosphere.jersey.Broadcastable;
+import org.atmosphere.annotation.Broadcast
+import org.atmosphere.annotation.Suspend
+import org.atmosphere.cpr.Broadcaster
+import org.atmosphere.jersey.Broadcastable
+import javax.ws.rs._
+import javax.ws.rs.core.Context
+import javax.ws.rs.core.MediaType
 
-import javax.ws.rs._;
-import javax.ws.rs.core.Context;
-import javax.ws.rs.core.MediaType;
+import com.google.inject._
 
 @Path("/")
-class WeaveResource // @Inject() ( val injectParam:String )
+class WeaveResource @Inject() ( val injectParam:String )
 {
     /*
      * Subscribes listener to the broadcast of clicker responses
@@ -29,7 +30,7 @@ class WeaveResource // @Inject() ( val injectParam:String )
     def subscribe( @PathParam("channel") channel:Broadcaster ):Broadcastable =
     {
       println("Subscribe" + channel.toString())
-      channel.broadcast("FIXME:injectParam")
+      channel.broadcast(injectParam)
         return new Broadcastable(channel)
     }
 

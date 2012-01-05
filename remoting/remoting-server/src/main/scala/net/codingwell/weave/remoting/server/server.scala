@@ -11,6 +11,10 @@ import org.atmosphere.cpr.AtmosphereServlet
 import org.atmosphere.cpr.ApplicationConfig
 import org.atmosphere.container.JettyCometSupportWithWebSocket
 import org.eclipse.jetty.servlet.ServletContextHandler
+import org.atmosphere.guice.AtmosphereGuiceServlet
+import com.google.inject.Injector
+import com.google.inject.Guice
+import com.google.inject.AbstractModule
 
 object AtmosphereWebsocketServer
 {
@@ -20,8 +24,8 @@ object AtmosphereWebsocketServer
 class AtmosphereWebsocketServer( val resourcePackage:String, val port:Int )
 {
    val server:Server = new Server(port)
-   val atmosphereServletHolder:ServletHolder = new ServletHolder( classOf[AtmosphereServlet] )
-
+   val atmosphereServletHolder:ServletHolder = new ServletHolder( classOf[AtmosphereGuiceServlet] )
+//.getAttribute(com.google.inject.Injector.class.getName());
        atmosphereServletHolder.setInitParameter("com.sun.jersey.config.property.packages", resourcePackage);
 	        atmosphereServletHolder.setInitParameter("com.sun.jersey.spi.container.ResourceFilter", "org.atmosphere.core.AtmosphereFilter");
 	        atmosphereServletHolder.setInitParameter(ApplicationConfig.PROPERTY_COMET_SUPPORT, classOf[JettyCometSupportWithWebSocket].getName());
@@ -29,8 +33,23 @@ class AtmosphereWebsocketServer( val resourcePackage:String, val port:Int )
 	        atmosphereServletHolder.setInitParameter(ApplicationConfig.PROPERTY_NATIVE_COMETSUPPORT, "true");
 	        atmosphereServletHolder.setInitParameter(ApplicationConfig.MAX_INACTIVE, AtmosphereWebsocketServer.DEFAULT_MAX_INACTIVITY_LIMIT );
 
+	        val injector:Injector = Guice.createInjector(new AbstractModule() {
+	
+            @Override
+            def configure() 
+            {
+	
+                //binder().requireExplicitBindings();
+	
+                bind(classOf[String]).toInstance("Bla")
+	
+            }
+	
+        });
+	        
 val servletContextHandler:ServletContextHandler = new ServletContextHandler(server, "/", ServletContextHandler.SESSIONS);
 servletContextHandler.addServlet(atmosphereServletHolder, "/atmosphere/*");
+servletContextHandler.setAttribute( classOf[com.google.inject.Injector].getName(), injector )
 
    def start():Unit =
    {

@@ -5,6 +5,7 @@ jerseyVersion     = '1.11'
 
 dependencies {
    compile "org.atmosphere:atmosphere-jersey:$atmosphereVersion",
+      "org.atmosphere:atmosphere-guice:$atmosphereVersion",
       "org.eclipse.jetty:jetty-servlet:$jettyVersion",
       "org.eclipse.jetty:jetty-websocket:$jettyVersion",
       "com.sun.jersey:jersey-core:$jerseyVersion",
