@@ -3,3 +3,8 @@
 ```bash
 > gradle eclipse
 ```
+
+# Handy #
+```bash
+> gradle projects
+```
