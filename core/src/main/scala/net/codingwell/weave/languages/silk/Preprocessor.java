@@ -4,7 +4,7 @@
 // which accompanies this distribution, and is available at 
 // http://www.eclipse.org/legal/epl-v10.html
 
-package net.codingwell.weave.silk;
+package net.codingwell.weave.languages.silk;
 
 public class Preprocessor
 {

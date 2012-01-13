@@ -6,9 +6,9 @@ which accompanies this distribution, and is available at
 http://www.eclipse.org/legal/epl-v10.html
  */
 
-package net.codingwell.util;
+package net.codingwell.weave.languages.vhdl;
 
-public interface Observer0
+public class VHDLParser
 {
-	void update(Observable0 o);
+
 }

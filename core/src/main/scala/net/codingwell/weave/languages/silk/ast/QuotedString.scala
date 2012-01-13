@@ -4,7 +4,8 @@
 // which accompanies this distribution, and is available at 
 // http://www.eclipse.org/legal/epl-v10.html
 
-package net.codingwell.weave.silk.ast
+package net.codingwell.weave.languages.silk.ast
+
 import org.parboiled.support.IndexRange
 
 case class QuotedString(text: String, range: IndexRange)

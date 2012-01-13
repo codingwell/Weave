@@ -1,4 +1,4 @@
-package net.codingwell.weave
+package net.codingwell.weave.CommandLine
 
 import scopt._
 

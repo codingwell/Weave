@@ -3,4 +3,7 @@ include 'core',
    'remoting:remoting-shared',
    'remoting:remoting-client',
    'remoting:remoting-server',
+   'command-line',
    'testing'
+
+// vim: syntax=groovy

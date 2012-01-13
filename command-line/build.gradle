@@ -1,0 +1,16 @@
+
+apply plugin: 'application'
+mainClassName = 'net.codingwell.weave.CommandLine.Main'
+
+dependencies {
+   compile project(':core')
+}
+
+run {
+   //Arguments for program
+   if ( project.hasProperty('args') ) {
+       args project.args.split('\\s+')
+   }
+}
+
+// vim: syntax=groovy

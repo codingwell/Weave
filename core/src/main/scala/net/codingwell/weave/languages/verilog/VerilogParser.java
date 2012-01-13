@@ -6,7 +6,7 @@ which accompanies this distribution, and is available at
 http://www.eclipse.org/legal/epl-v10.html
  */
 
-package net.codingwell.weave.verilog;
+package net.codingwell.weave.languages.verilog;
 
 //TODO: PORT to scala
 

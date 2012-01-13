@@ -1,6 +1,14 @@
 
+parboiledVersion  = '1.0.2'
+
 dependencies {
    compile project(':core-api')
+   
+   compile   "org.parboiled:parboiled-scala:$parboiledVersion",
+      "com.github.scopt:scopt_2.9.1:1.1.2",
+      "org.fusesource.jansi:jansi:1.7",
+      "org.slf4j:slf4j-simple:1.6.4",
+      "com.google.inject:guice:3.0"
 }
 
 // vim: syntax=groovy

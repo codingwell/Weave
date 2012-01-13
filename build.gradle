@@ -26,55 +26,6 @@ subprojects {
    }
 }
 
-apply plugin: 'application'
-
-mainClassName = "net.codingwell.weave.WeaveCL"
-
-
-defaultTasks 'compileScala'
-
-repositories {
-   mavenCentral()
-   mavenRepo name:'scala-releases', url:'http://scala-tools.org/repo-releases/'
-}
-
-parboiledVersion  = '1.0.2'
-atmosphereVersion = '0.8.2'
-jettyVersion      = '8.1.0.RC1'
-jerseyVersion     = '1.11'
-
-dependencies {
-//   scalaTools "org.scala-lang:scala-compiler:$scalaVersion",
-//      "org.scala-lang:scala-library:$scalaVersion"
-
-   //compile "org.scala-lang:scala-library:$scalaVersion",
-   compile   "org.parboiled:parboiled-scala:$parboiledVersion",
-      "com.github.scopt:scopt_2.9.1:1.1.2",
-      "org.fusesource.jansi:jansi:1.7",
-      "org.atmosphere:atmosphere-jersey:$atmosphereVersion",
-      "org.eclipse.jetty:jetty-servlet:$jettyVersion",
-      "org.eclipse.jetty:jetty-websocket:$jettyVersion",
-      "com.sun.jersey:jersey-core:$jerseyVersion",
-      "com.sun.jersey:jersey-server:$jerseyVersion",
-      "com.sun.jersey:jersey-servlet:$jerseyVersion",
-      "org.slf4j:slf4j-simple:1.6.4",
-      "com.google.inject:guice:3.0"
-
-   testCompile "junit:junit:4.5",
-      //"org.scala-tools.testing:specs:1.6.1",
-//      "org.scala-lang:scala-compiler:$scalaVersion",
-      "org.parboiled:parboiled-scala:$parboiledVersion"
-}
-
-configurations {
-   all*.exclude group: 'org.atmosphere', module: 'atmosphere-compat-jetty'
-}
-
-run {
-   //Arguments for program
-   if ( project.hasProperty('args') ) {
-       args project.args.split('\\s+')
-   }
-}
+defaultTasks 'build'
 
 // vim: syntax=groovy

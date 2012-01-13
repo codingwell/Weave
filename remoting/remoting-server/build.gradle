@@ -14,10 +14,9 @@ dependencies {
       "org.slf4j:slf4j-simple:1.6.4",
       "com.google.inject:guice:3.0"
 
-   testCompile "junit:junit:4.5",
+   //testCompile "junit:junit:4.5",
       //"org.scala-tools.testing:specs:1.6.1",
-//      "org.scala-lang:scala-compiler:$scalaVersion",
-      "org.parboiled:parboiled-scala:$parboiledVersion"
+//      "org.scala-lang:scala-compiler:$scalaVersion"
 }
 
 configurations {
