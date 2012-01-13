@@ -25,13 +25,13 @@ class AtmosphereWebsocketServer( val resourcePackage:String, val port:Int )
 {
    val server:Server = new Server(port)
    val atmosphereServletHolder:ServletHolder = new ServletHolder( classOf[AtmosphereGuiceServlet] )
-//.getAttribute(com.google.inject.Injector.class.getName());
-       atmosphereServletHolder.setInitParameter("com.sun.jersey.config.property.packages", resourcePackage);
-	        atmosphereServletHolder.setInitParameter("com.sun.jersey.spi.container.ResourceFilter", "org.atmosphere.core.AtmosphereFilter");
-	        atmosphereServletHolder.setInitParameter(ApplicationConfig.PROPERTY_COMET_SUPPORT, classOf[JettyCometSupportWithWebSocket].getName());
-	        atmosphereServletHolder.setInitParameter(ApplicationConfig.WEBSOCKET_SUPPORT, "true");
-	        atmosphereServletHolder.setInitParameter(ApplicationConfig.PROPERTY_NATIVE_COMETSUPPORT, "true");
-	        atmosphereServletHolder.setInitParameter(ApplicationConfig.MAX_INACTIVE, AtmosphereWebsocketServer.DEFAULT_MAX_INACTIVITY_LIMIT );
+
+   atmosphereServletHolder.setInitParameter("com.sun.jersey.config.property.packages", resourcePackage)
+   atmosphereServletHolder.setInitParameter("com.sun.jersey.spi.container.ResourceFilter", "org.atmosphere.core.AtmosphereFilter")
+   atmosphereServletHolder.setInitParameter(ApplicationConfig.PROPERTY_COMET_SUPPORT, classOf[JettyCometSupportWithWebSocket].getName())
+   atmosphereServletHolder.setInitParameter(ApplicationConfig.WEBSOCKET_SUPPORT, "true")
+   atmosphereServletHolder.setInitParameter(ApplicationConfig.PROPERTY_NATIVE_COMETSUPPORT, "true")
+   atmosphereServletHolder.setInitParameter(ApplicationConfig.MAX_INACTIVE, AtmosphereWebsocketServer.DEFAULT_MAX_INACTIVITY_LIMIT )
 
 	        val injector:Injector = Guice.createInjector(new AbstractModule() {
 	
