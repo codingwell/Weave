@@ -8,7 +8,6 @@ package net.codingwell.weave.languages.silk.ast
 
 case class File( val members:Seq[GlobalStatement])
 
-//TODO: Should Decl->Declaration?, Spec->Specification?
 //TODO: Classes will need object with apply method
 
 sealed abstract class Statement
@@ -16,24 +15,24 @@ sealed abstract class Statement
 class GlobalStatement() extends Statement {}
 
 case class Module( val identifier:Identifier, val parameters:Seq[Parameter] , val scope:Scope ) extends GlobalStatement {}
-class ImportStatement( val packagespec:PackageSpec ) extends GlobalStatement {}
-class TypeDecl( val typespec:TypeSpec ) extends GlobalStatement {}
+class ImportStatement( val packagespec:PackageSpecification ) extends GlobalStatement {}
+class TypeDeclaration( val typespec:TypeSpecification ) extends GlobalStatement {}
 
-class TypeIsDecl( typespec:TypeSpec ) extends TypeDecl( typespec ) {}
-class TypeExtendsDecl( typespec:TypeSpec ) extends TypeDecl( typespec ) {}
+class TypeIsDeclaration( typespec:TypeSpecification ) extends TypeDeclaration( typespec ) {}
+class TypeExtendsDeclaration( typespec:TypeSpecification ) extends TypeDeclaration( typespec ) {}
 
-class TypeSpec() {}
-case class PlainType( val indentifier:Identifier ) extends TypeSpec {}
-case class LiteralType() extends TypeSpec {}
-case class NumberType() extends TypeSpec {}
-case class ArrayType( val basetype:TypeSpec ) extends TypeSpec {}
+class TypeSpecification() {}
+case class PlainType( val indentifier:Identifier ) extends TypeSpecification {}
+case class LiteralType() extends TypeSpecification {}
+case class NumberType() extends TypeSpecification {}
+case class ArrayType( val basetype:TypeSpecification ) extends TypeSpecification {}
 
-class Import( packagespec:PackageSpec ) extends ImportStatement( packagespec ) {}
-class ImportViral( packagespec:PackageSpec ) extends ImportStatement( packagespec ) {}
+class Import( packagespec:PackageSpecification ) extends ImportStatement( packagespec ) {}
+class ImportViral( packagespec:PackageSpecification ) extends ImportStatement( packagespec ) {}
 
-case class PackageSpec( val identifiers:Seq[Identifier] ) {}
+case class PackageSpecification( val identifiers:Seq[Identifier] ) {}
 
-case class Parameter( val identifier:Identifier, val direction:Direction, val typespec:TypeSpec ) {}
+case class Parameter( val identifier:Identifier, val direction:Direction, val typespec:TypeSpecification ) {}
 
 case class Identifier() extends Expression {}
 case class Direction() {}
@@ -41,7 +40,7 @@ case class Direction() {}
 case class Scope( val statement:Seq[Statement] ) extends Statement {}
 
 class Expression() extends Statement {}
-case class Instantiation( val identifier:Identifier, instancetype:TypeSpec ) extends Statement {}
+case class Instantiation( val identifier:Identifier, instancetype:TypeSpecification ) extends Statement {}
 
 case class ForLoop( val init:Expression, val conditional:Expression, val post:Expression, val body:Statement ) extends Statement {}
 case class WhileLoop( val conditional:Expression, val body:Statement ) extends Statement {}
