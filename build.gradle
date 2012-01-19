@@ -7,6 +7,9 @@ allprojects {
    sourceCompatibility = JavaVersion.VERSION_1_6
    eclipse.classpath.containers += ["org.scala-ide.sdt.launching.SCALA_CONTAINER"]
 }
+libraries = [
+   guice: 'com.google.inject:guice:3.0'
+]
 
 subprojects {
    apply plugin: 'scala'

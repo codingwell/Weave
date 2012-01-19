@@ -1,6 +1,7 @@
 apply plugin: 'scala'
 
 dependencies {
+   compile libraries.guice
 }
 
 // vim: syntax=groovy

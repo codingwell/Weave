@@ -3,6 +3,7 @@ build/
 .directory
 .gradle
 .cache
+*.stackdump
 
 #Eclipse
 .settings

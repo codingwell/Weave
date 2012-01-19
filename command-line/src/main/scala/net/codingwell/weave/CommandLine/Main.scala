@@ -4,32 +4,34 @@
 // which accompanies this distribution, and is available at 
 // http://www.eclipse.org/legal/epl-v10.html
 
-package net.codingwell.weave
-import net.codingwell.weave.CommandLine.WeaveConfig
+package net.codingwell.weave.CommandLine
+
 import com.google.inject._
 import net.codingwell.jansi.AnsiConsole
+import net.codingwell.weave.WeaveCompiler
 
 object Main {
 
    def main(args: Array[String]):Unit = {
+
+      //Load Config (Command Line)
+      val config:WeaveConfig = new WeaveConfig()
+      if( !CommandLineParser.parse( args, config ) ) return
+
+      //Ansi console color proxy
+      AnsiConsole.systemInstall( config.forcecolor )
 
       //Prepare Dependancy Injection
       val injector:Injector = Guice.createInjector(
          new AbstractModule() {
             @Override
             def configure() {
-                bind(classOf[String]).toInstance("Bla")
+//                bind(classOf[Config]).toInstance(someInstance)
             }
         }
       )
 
-      //Load Config (Command Line)
-      var config:WeaveConfig = new WeaveConfig()
-      //if( !CommandLineParser.parse( args, config ) ) return
-
-      //Ansi console color proxy
-      AnsiConsole.systemInstall( config.forcecolor )
-
-
+      //Get the compiler
+      var compiler:WeaveCompiler = injector.getInstance(classOf[WeaveCompiler])
    }
 }
