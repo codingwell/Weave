@@ -1,5 +1,4 @@
 // Copyright (c) 2011 Thomas Suckow
-// All rights reserved. This program and the accompanying materials 
 // are made available under the terms of the Eclipse Public License v1.0 
 // which accompanies this distribution, and is available at 
 // http://www.eclipse.org/legal/epl-v10.html
@@ -25,8 +24,15 @@ class SilkParser(val buffer: IncludableInputBuffer[String]) extends Parser
   case object ASTInclude extends ASTGlobalStatement
   case object PlaceHolder extends AstNode
   
-  def File = rule { OWhiteSpace ~ zeroOrMore(GlobalStatement) ~~> ASTFile ~ EOI }
+  def File = rule { OWhiteSpace ~ zeroOrMore(ZGlobalStatement) ~~> ast.File ~ EOI }
   
+  def ZGlobalStatement = { ZImport | ZImportViral }
+  def ZImport = rule { "import" ~ WhiteSpace ~ ZPackageSpecification ~~> ast.Import }
+  def ZImportViral = rule { "importviral" ~ WhiteSpace ~ ZPackageSpecification ~~> ast.ImportViral }
+  def ZPackageSpecification = rule { oneOrMore( ZIdentifier, "." ) ~~> ast.PackageSpecification }
+  def ZIdentifier = rule { ID ~> ast.Identifier }
+
+
   def GlobalStatement = rule { Using | TempInclude }
   
   def TempInclude = rule { Include ~ push(ASTInclude) }

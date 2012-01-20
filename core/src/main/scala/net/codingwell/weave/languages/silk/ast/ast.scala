@@ -8,8 +8,6 @@ package net.codingwell.weave.languages.silk.ast
 
 case class File( val members:Seq[GlobalStatement])
 
-//TODO: Classes will need object with apply method
-
 sealed abstract class Statement
 
 class GlobalStatement() extends Statement {}
@@ -27,14 +25,21 @@ case class LiteralType() extends TypeSpecification {}
 case class NumberType() extends TypeSpecification {}
 case class ArrayType( val basetype:TypeSpecification ) extends TypeSpecification {}
 
+object Import extends Function1[PackageSpecification,Import] {
+   def apply( packagespec:PackageSpecification ):Import = new Import( packagespec )
+}
 class Import( packagespec:PackageSpecification ) extends ImportStatement( packagespec ) {}
+
+object ImportViral extends Function1[PackageSpecification,ImportViral] {
+   def apply( packagespec:PackageSpecification ):ImportViral = new ImportViral( packagespec )
+}
 class ImportViral( packagespec:PackageSpecification ) extends ImportStatement( packagespec ) {}
 
 case class PackageSpecification( val identifiers:Seq[Identifier] ) {}
 
 case class Parameter( val identifier:Identifier, val direction:Direction, val typespec:TypeSpecification ) {}
 
-case class Identifier() extends Expression {}
+case class Identifier( val name:String ) extends Expression {}
 case class Direction() {}
 
 case class Scope( val statement:Seq[Statement] ) extends Statement {}
