@@ -4,6 +4,9 @@ include 'core',
    'remoting:remoting-client',
    'remoting:remoting-server',
    'command-line',
-   'testing'
+   'parboiled-utils',
+   'lang-silk',
+   'lang-verilog',
+   'lang-vhdl'
 
 // vim: syntax=groovy
