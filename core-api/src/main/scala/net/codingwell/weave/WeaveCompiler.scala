@@ -8,9 +8,8 @@ package net.codingwell.weave
 
 import com.google.inject._
 
-//FIXME: Placeholder
-sealed abstract class Engine
+abstract class Executor
 
-class WeaveCompiler @Inject() ( val engines:Seq[Engine] ) {
+class WeaveCompiler @Inject() ( val engines:Seq[Executor] ) {
    
 }
