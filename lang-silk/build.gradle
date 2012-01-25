@@ -5,8 +5,8 @@ dependencies {
    compile project(':core')
    compile project(':parboiled-utils')
    
-   compile   "org.parboiled:parboiled-scala:$parboiledVersion",
-      libraries.guice
+   compile "org.parboiled:parboiled-scala:$parboiledVersion"
+   compile libraries.guice, libraries.guice_multibindings
 }
 
 // vim: syntax=groovy

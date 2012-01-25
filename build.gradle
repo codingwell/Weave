@@ -7,8 +7,14 @@ allprojects {
    sourceCompatibility = JavaVersion.VERSION_1_6
    eclipse.classpath.containers += ["org.scala-ide.sdt.launching.SCALA_CONTAINER"]
 }
+
+libraryversions = [
+	guice = '3.0'
+]
+
 libraries = [
-   guice: 'com.google.inject:guice:3.0'
+   guice: 'com.google.inject:guice:3.0',
+   guice_multibindings: 'com.google.inject.extensions:guice-multibindings:3.0'
 ]
 
 subprojects {
