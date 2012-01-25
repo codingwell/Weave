@@ -5,8 +5,10 @@ include 'core',
    'remoting:remoting-server',
    'command-line',
    'parboiled-utils',
-   'lang-silk',
-   'lang-verilog',
-   'lang-vhdl'
+   'lang-silk'
+   
+   ////For later development
+   //'lang-verilog',
+   //'lang-vhdl'
 
 // vim: syntax=groovy
