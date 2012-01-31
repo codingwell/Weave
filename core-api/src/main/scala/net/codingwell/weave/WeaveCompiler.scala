@@ -8,8 +8,13 @@ package net.codingwell.weave
 
 import com.google.inject._
 
-abstract class Executor
+//@BindingAnnotation @Target({ FIELD, PARAMETER, METHOD }) @Retention(RUNTIME)
+//public @interface Executor {}
 
-class WeaveCompiler @Inject() ( val engines:Seq[Executor] ) {
-   
+abstract class Executor {
+   def compile( file:WeaveFile ) = {}
+}
+
+class WeaveCompiler @Inject() ( val engines:java.util.Set[Executor] ) {
+  def compile( files:Seq[WeaveFile] ):Unit = { }
 }

@@ -8,7 +8,11 @@ package net.codingwell.weave.CommandLine
 
 import com.google.inject._
 import net.codingwell.jansi.AnsiConsole
-import net.codingwell.weave.WeaveCompiler
+import net.codingwell.weave._
+import net.codingwell.weave.languages.silk._
+import java.io.File
+import scala.actors.Actor
+import scala.actors.Actor._
 
 object Main {
 
@@ -23,15 +27,29 @@ object Main {
 
       //Prepare Dependancy Injection
       val injector:Injector = Guice.createInjector(
+         LocalExecutorModule(),
+         SilkCompilerModule(),
          new AbstractModule() {
             @Override
             def configure() {
-//                bind(classOf[Config]).toInstance(someInstance)
+                //bind(classOf[Config]).toInstance(someInstance)
+//                bind(classOf[CodeSource]).to(classOf[FileCodeSource])
+//                bind(classOf[OutputDestination]).to(classOf[FileOutputDestination])
             }
         }
       )
 
       //Get the compiler
       var compiler:WeaveCompiler = injector.getInstance(classOf[WeaveCompiler])
+
+      val file = new NativeWeaveFile( new File("samples/newtest.silk"), "silk" )
+
+      val files = List( file )
+
+      compiler.compile( files )
+   }
+
+   val testActor = actor {
+      
    }
 }

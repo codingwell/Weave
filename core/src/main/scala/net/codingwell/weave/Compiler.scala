@@ -1,5 +1,9 @@
 package net.codingwell.weave
 
-trait Compiler {
+class RTLPlaceholder {}
 
+trait Compiler {
+	def compile( file:WeaveFile ):RTLPlaceholder
+	
+	def supportedLanguages():Set[String]
 }

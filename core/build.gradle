@@ -4,7 +4,7 @@ parboiledVersion  = '1.0.2'
 dependencies {
    compile project(':core-api')
    
-   compile libraries.guice
+   compile libraries.guice, libraries.guice_multibindings
 }
 
 // vim: syntax=groovy

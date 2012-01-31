@@ -1,23 +1,20 @@
 package net.codingwell.weave.languages.silk
 import java.util.Arrays
-
 import org.parboiled.scala.ParsingResult.unwrap
 import org.parboiled.scala.parserunners.RecoveringParseRunner
 import org.parboiled.scala.Input
-
 import net.codingwell.parboiled.ErrorUtils
 import net.codingwell.parboiled.IncludableInputBuffer
 import net.codingwell.weave.Compiler
 import net.codingwell.weave.WeaveFile
-
-class RTLPlaceholder {}
+import net.codingwell.weave.RTLPlaceholder
 
 class SilkCompiler extends Compiler {
 
   def compile( file:WeaveFile ): RTLPlaceholder = {
 
     val buffer = new IncludableInputBuffer[String]
-    buffer.include(0, Preprocessor.StripComments( file.contents ), file.filename, 0);//Load the first file
+    buffer.include(0, Preprocessor.StripComments( file.contents ), file.name, 0);//Load the first file
 
     val parser = new net.codingwell.weave.languages.silk.SilkParser(buffer)
     val parserunner = RecoveringParseRunner(parser.File)
@@ -44,6 +41,7 @@ class SilkCompiler extends Compiler {
     new RTLPlaceholder
   }
 
+  def supportedLanguages() = Set("Silk")
 }
 
 // vim: tabstop=2 shiftwidth=2
