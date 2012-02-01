@@ -24,30 +24,30 @@ object WeaveActor {
 
 import WeaveActor._
 
-class WeaveActor extends Actor {
+class WeaveActor ( @Executor() val engines:MutableSet[Actor] ) extends Actor {
+  @Inject() def this( @Executor() engines:java.util.Set[Actor] ) = this( asScalaSet(engines) )
+
   val fileQueue = new MutableQueue[WeaveFile]
   this.start
 
   def act() {
+    engines foreach ( link _ )
     loop {
       react {
         case QueueFile(file) => fileQueue enqueue file
-        case Quit => exit
+        case Quit => exit('kill)
         case _ => println(this.toString() + " recieved unexpected message.")
       }
     }
   }
 }
 
-class WeaveCompiler @Inject() ( @Executor() val engines:java.util.Set[Actor] ) {
-  
-  val weaveActor = new WeaveActor
+class WeaveCompiler @Inject() ( val weaveActor:WeaveActor ) {
 
   def compile( files:Seq[WeaveFile] ):Unit = {
-    val nativeengines:MutableSet[Actor] = engines
-    nativeengines foreach (_ ! "Message!")
-    nativeengines foreach (_ ! "Message!")
-    nativeengines foreach (_ ! 1)
+//    nativeengines foreach (_ ! "Message!")
+ //   nativeengines foreach (_ ! "Message!")
+ //   nativeengines foreach (_ ! 1)
     Thread.sleep(3000)
     weaveActor ! WeaveActor.Quit
   }
