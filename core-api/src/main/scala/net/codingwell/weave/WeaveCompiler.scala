@@ -7,14 +7,36 @@
 package net.codingwell.weave
 
 import com.google.inject._
+import scala.actors._
+import scala.collection.JavaConversions._
+import scala.collection.mutable.{Set => MutableSet}
 
-//@BindingAnnotation @Target({ FIELD, PARAMETER, METHOD }) @Retention(RUNTIME)
-//public @interface Executor {}
-
+/*
 abstract class Executor {
    def compile( file:WeaveFile ) = {}
 }
+*/
 
-class WeaveCompiler @Inject() ( val engines:java.util.Set[Executor] ) {
-  def compile( files:Seq[WeaveFile] ):Unit = { }
+object WeaveActor {
+  case class QueueFile( file:WeaveFile )
+}
+
+class WeaveActor extends Actor {
+  def act() {
+    loop {
+      react {
+        case _ => println(this.toString() + " recieved unexpected message.")
+      }
+    }
+  }
+}
+
+class WeaveCompiler @Inject() ( @Executor() val engines:java.util.Set[Actor] ) {
+  
+  def compile( files:Seq[WeaveFile] ):Unit = {
+    val nativeengines:MutableSet[Actor] = engines
+    nativeengines foreach (_ ! "Message!")
+    nativeengines foreach (_ ! "Message!")
+    nativeengines foreach (_ ! 1)
+  }
 }
