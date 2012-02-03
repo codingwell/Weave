@@ -3,6 +3,7 @@ apply plugin: 'scala'
 dependencies {
    compile libraries.guice
    compile libraries.commons_io
+   compile libraries.akka_actor
 }
 
 // vim: syntax=groovy

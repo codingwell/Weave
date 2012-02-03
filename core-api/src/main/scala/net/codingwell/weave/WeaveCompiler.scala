@@ -7,42 +7,58 @@
 package net.codingwell.weave
 
 import com.google.inject._
-import scala.actors._
+import com.google.inject.name._
+import akka.actor._
 import scala.collection.JavaConversions._
 import scala.collection.mutable.{Set => MutableSet, Queue => MutableQueue}
 
-/*
-abstract class Executor {
-   def compile( file:WeaveFile ) = {}
-}
-*/
+sealed trait AExecutorMessage
+case class AQueueFile( file:WeaveFile ) extends AExecutorMessage
+case object AQuit extends AExecutorMessage
 
+class Master extends akka.actor.Actor {
+def receive = {
+  case AQuit =>
+      self ! akka.actor.PoisonPill
+}}
 object WeaveActor {
   case class QueueFile( file:WeaveFile )
   case object Quit
 }
-
 import WeaveActor._
 
-class WeaveActor ( @Executor() val engines:MutableSet[Actor] ) extends Actor {
-  @Inject() def this( @Executor() engines:java.util.Set[Actor] ) = this( asScalaSet(engines) )
+class WeaveActor ( val engines:MutableSet[ActorRef] ) extends Actor {
+  @Inject() def this( @Named("Executors") engines:java.util.Set[ActorRef] ) = this( asScalaSet(engines) )
 
   val fileQueue = new MutableQueue[WeaveFile]
-  this.start
 
-  def act() {
-    engines foreach ( link _ )
-    loop {
-      react {
-        case QueueFile(file) => fileQueue enqueue file
-        case Quit => exit('kill)
-        case _ => println(this.toString() + " recieved unexpected message.")
-      }
-    }
+  override def preStart() = {
+    engines foreach ( self.link( _ ) ) //This doesn't cause engines to exit when self takes the PoisonPill
+  }
+
+  def receive = {
+    case QueueFile(file) =>
+      fileQueue enqueue file
+    case Quit =>
+      println("You should have taken the blue pill.");
+      self ! akka.actor.PoisonPill
+      engines foreach ( _ ! akka.actor.PoisonPill ) //This does cause engines to exit when self takes the PoisonPill
+    case unknown =>
+      println(this.toString() + " recieved unexpected message.")
   }
 }
 
-class WeaveCompiler @Inject() ( val weaveActor:WeaveActor ) {
+case class WeaveModule() extends AbstractModule {
+
+  def configure() = {
+    bind(classOf[ActorRef])
+      .annotatedWith( Names.named("WeaveActor") )
+      .toProvider( new TypeLiteral[ActorProvider[WeaveActor]]() {} )
+  }
+
+}
+
+class WeaveCompiler @Inject() ( @Named("WeaveActor") val weaveActor:ActorRef ) {
 
   def compile( files:Seq[WeaveFile] ):Unit = {
 //    nativeengines foreach (_ ! "Message!")

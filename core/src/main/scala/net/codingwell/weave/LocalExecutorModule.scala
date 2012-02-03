@@ -7,16 +7,16 @@
 package net.codingwell.weave
 
 import com.google.inject._
+import com.google.inject.name._
 import com.google.inject.multibindings._
-import scala.actors._
-
+import akka.actor._
 
 case class LocalExecutorModule() extends AbstractModule {
 
   def configure() = {
-    val executorbinder = Multibinder.newSetBinder( binder(), classOf[Actor], classOf[Executor] )
+    val executorbinder = Multibinder.newSetBinder( binder(), classOf[ActorRef], Names.named("Executors") )
 
-    executorbinder.addBinding().to(classOf[LocalExecutor])
+    executorbinder.addBinding().toProvider( new TypeLiteral[ActorProvider[LocalExecutor]]() {} )
   }
 
 }

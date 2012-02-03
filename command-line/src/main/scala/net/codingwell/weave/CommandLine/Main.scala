@@ -11,8 +11,6 @@ import net.codingwell.jansi.AnsiConsole
 import net.codingwell.weave._
 import net.codingwell.weave.languages.silk._
 import java.io.File
-import scala.actors.Actor
-import scala.actors.Actor._
 
 object Main {
 
@@ -29,14 +27,15 @@ object Main {
       val injector:Injector = Guice.createInjector(
          LocalExecutorModule(),
          SilkCompilerModule(),
-         new AbstractModule() {
+         WeaveModule()
+/*         new AbstractModule() {
             @Override
             def configure() {
                 //bind(classOf[Config]).toInstance(someInstance)
 //                bind(classOf[CodeSource]).to(classOf[FileCodeSource])
 //                bind(classOf[OutputDestination]).to(classOf[FileOutputDestination])
             }
-        }
+        }*/
       )
 
       //Get the compiler
@@ -47,9 +46,5 @@ object Main {
       val files = List( file )
 
       compiler.compile( files )
-   }
-
-   val testActor = actor {
-      
    }
 }
