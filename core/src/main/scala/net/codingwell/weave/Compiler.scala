@@ -1,9 +1,6 @@
 package net.codingwell.weave
 
-class RTLPlaceholder {}
-
-trait Compiler {
-	def compile( file:WeaveFile ):RTLPlaceholder
-	
-	def supportedLanguages():Set[String]
+object Compiler {
+  case class Compile( file:WeaveFile )
+  case object GetSupportedLanguages
 }

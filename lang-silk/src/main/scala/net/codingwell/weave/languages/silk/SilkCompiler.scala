@@ -1,17 +1,23 @@
 package net.codingwell.weave.languages.silk
+
 import java.util.Arrays
 import org.parboiled.scala.ParsingResult.unwrap
 import org.parboiled.scala.parserunners.RecoveringParseRunner
 import org.parboiled.scala.Input
 import net.codingwell.parboiled.ErrorUtils
 import net.codingwell.parboiled.IncludableInputBuffer
-import net.codingwell.weave.Compiler
+import net.codingwell.weave.Compiler._
 import net.codingwell.weave.WeaveFile
-import net.codingwell.weave.RTLPlaceholder
+import akka.actor._
 
-class SilkCompiler extends Compiler {
+class SilkCompiler extends Actor {
 
-  def compile( file:WeaveFile ): RTLPlaceholder = {
+  def receive = {
+    case Compile( file ) =>
+    case GetSupportedLanguages => self.channel ! {"scala"}
+  }
+
+  def compile( file:WeaveFile ):Unit = {
 
     val buffer = new IncludableInputBuffer[String]
     buffer.include(0, Preprocessor.StripComments( file.contents ), file.name, 0);//Load the first file
@@ -37,8 +43,6 @@ class SilkCompiler extends Compiler {
         case _ => throw new Error("Slik AST missing")
       }
     }
-
-    new RTLPlaceholder
   }
 
   def supportedLanguages() = Set("Silk")

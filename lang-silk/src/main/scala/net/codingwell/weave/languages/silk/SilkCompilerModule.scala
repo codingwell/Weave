@@ -6,17 +6,20 @@
 
 package net.codingwell.weave.languages.silk
 
-import net.codingwell.weave.Compiler
+import net.codingwell.weave._
 
 import com.google.inject._
+import com.google.inject.name._
 import com.google.inject.multibindings._
+
+import akka.actor._
 
 case class SilkCompilerModule() extends AbstractModule {
 
   def configure() = {
-    val compilerbinder = Multibinder.newSetBinder( binder(), classOf[Compiler] )
+    val compilerbinder = Multibinder.newSetBinder( binder(), classOf[ActorRef], Names.named("LangCompilers") )
 
-    compilerbinder.addBinding().to(classOf[SilkCompiler])
+    compilerbinder.addBinding().toProvider( new TypeLiteral[ActorProvider[SilkCompiler]]() {} )
   }
 
 }

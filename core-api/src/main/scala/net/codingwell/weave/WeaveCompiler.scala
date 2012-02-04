@@ -41,8 +41,9 @@ class WeaveActor ( val engines:MutableSet[ActorRef] ) extends Actor {
       fileQueue enqueue file
     case Quit =>
       println("You should have taken the blue pill.");
-      self ! akka.actor.PoisonPill
-      engines foreach ( _ ! akka.actor.PoisonPill ) //This does cause engines to exit when self takes the PoisonPill
+      self.stop()
+//      self ! akka.actor.PoisonPill
+//      engines foreach ( _ ! akka.actor.PoisonPill ) //This does cause engines to exit when self takes the PoisonPill
     case unknown =>
       println(this.toString() + " recieved unexpected message.")
   }
