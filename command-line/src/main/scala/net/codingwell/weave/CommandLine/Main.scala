@@ -28,14 +28,6 @@ object Main {
          LocalExecutorModule(),
          SilkCompilerModule(),
          WeaveModule()
-/*         new AbstractModule() {
-            @Override
-            def configure() {
-                //bind(classOf[Config]).toInstance(someInstance)
-//                bind(classOf[CodeSource]).to(classOf[FileCodeSource])
-//                bind(classOf[OutputDestination]).to(classOf[FileOutputDestination])
-            }
-        }*/
       )
 
       //Get the compiler
