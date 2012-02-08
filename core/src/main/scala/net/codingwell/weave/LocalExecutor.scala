@@ -16,8 +16,9 @@ class LocalExecutor ( val compilers:MutableSet[ActorRef]) extends Actor {
   @Inject() def this( @Named("LangCompilers") compilers:java.util.Set[ActorRef] ) = this( asScalaSet(compilers) )
 
   def receive = {
-    case s:String =>
-      println("Msg: " + s);
+    case msg @ WeaveCompiler.NotifyWork(actor,source,target) =>
+//      println("Msg: " + source + target)
+      compilers foreach ( _.forward(msg) )
     case unknown =>
       println(this.toString() + " recieved unexpected message.")
   }

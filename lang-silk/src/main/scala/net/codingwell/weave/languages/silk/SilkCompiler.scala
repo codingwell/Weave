@@ -6,18 +6,28 @@ import org.parboiled.scala.parserunners.RecoveringParseRunner
 import org.parboiled.scala.Input
 import net.codingwell.parboiled.ErrorUtils
 import net.codingwell.parboiled.IncludableInputBuffer
-import net.codingwell.weave.Compiler._
-import net.codingwell.weave.WeaveFile
+import net.codingwell.weave._
 import akka.actor._
+
+import scala.collection.mutable.{Map => MutableMap}
 
 class SilkCompiler extends Actor {
 
+//  val map = new MutableMap[UntypedChannel,String]
+
   def receive = {
-    case Compile( file ) =>
-    case GetSupportedLanguages => self.channel ! {"scala"}
+    case WeaveCompiler.NotifyWork(actor, source,target) =>
+      val work = actor ? WeaveCompiler.RequestWork( source, target )
+      work.as[WeaveCompiler.Work[WeaveFile]] match {
+        case Some(WeaveCompiler.Work(file)) =>
+          compile( file )
+        case None =>
+        case _ =>
+      }
   }
 
   def compile( file:WeaveFile ):Unit = {
+          println("File")
 
     val buffer = new IncludableInputBuffer[String]
     buffer.include(0, Preprocessor.StripComments( file.contents ), file.name, 0);//Load the first file

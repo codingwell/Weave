@@ -11,30 +11,59 @@ import com.google.inject.name._
 import java.io.File
 import akka.actor._
 import scala.collection.JavaConversions._
-import scala.collection.mutable.{Set => MutableSet, Queue => MutableQueue}
+import scala.collection.mutable.{Set => MutableSet, Queue => MutableQueue, HashSet => MutableHashSet}
 
+object WeaveCompiler {
+  //Incoming
+  case class NotifyWork( val actor:ActorRef, val source:String, target:String )
+
+  //Outgoing
+  case class RequestWork(val source:String, val target:String)
+  
+  case class Work[S](val source:S)
+
+  //case class Compile( file:WeaveFile )
+  //case object GetSupportedLanguages
+}
 object WeaveActor {
   case class QueueFile( file:WeaveFile )
+  case object Join
   case object Quit
 }
 import WeaveActor._
 
-class WeaveActor ( val engines:MutableSet[ActorRef] ) extends Actor {
-  @Inject() def this( @Named("Executors") engines:java.util.Set[ActorRef] ) = this( asScalaSet(engines) )
+class WeaveActor ( val executors:MutableSet[ActorRef] ) extends Actor {
+  @Inject() def this( @Named("Executors") executors:java.util.Set[ActorRef] ) = this( asScalaSet(executors) )
 
-  val fileQueue = new MutableQueue[WeaveFile]
+  class Work (val channel:UntypedChannel, val file:WeaveFile, val engine:ActorRef) {
+  }
+
+  val pendingQueue = new MutableQueue[WeaveFile]
+  val workingQueue = new MutableQueue[Work]
+  val doneQueue = new MutableQueue[WeaveFile]
+  val notifyWhenDone = new MutableHashSet[UntypedChannel]
 
   def receive = {
     case QueueFile(file) =>
-      fileQueue enqueue file
+      pendingQueue enqueue file
+      executors foreach ( _ ! WeaveCompiler.NotifyWork(self, "file",file.filetype) )
+      executors foreach ( _ ! WeaveCompiler.NotifyWork(self, "file",file.filetype) )
+      self.channel ! 'Fail
+    case WeaveCompiler.RequestWork(source,target) =>
+      if( !pendingQueue.isEmpty )
+        self.channel ! WeaveCompiler.Work( pendingQueue dequeue )
+      else
+        self.channel ! null
     case Quit =>
       self ! akka.actor.PoisonPill
+    case Join =>
+      notifyWhenDone += self.channel
     case unknown =>
       println(this.toString() + " recieved unexpected message.")
   }
 
   override def postStop() = {
-      engines foreach ( _ ! akka.actor.PoisonPill )
+      executors foreach ( _ ! akka.actor.PoisonPill )
   }
 }
 
@@ -51,7 +80,17 @@ case class WeaveModule() extends AbstractModule {
 class WeaveCompiler @Inject() ( @Named("WeaveActor") val weaveActor:ActorRef ) {
 
   def compile( files:Seq[WeaveFile] ):Unit = {
-    weaveActor ! WeaveActor.QueueFile( new NativeWeaveFile( new File("samples/test2.silk"), "silk") )
+    val future = weaveActor ? WeaveActor.QueueFile( new NativeWeaveFile( new File("../samples/test2.silk"), "silk") )
+    future.as[Symbol] match {
+      case Some('Done) => println("YAY")
+      case Some('Fail) => println("x.x")
+      case None => println(":(")
+      case _ => println("???")
+    }
+
+    //FIXME
+    Thread.sleep(5000);
+
     weaveActor ! WeaveActor.Quit
   }
 }
