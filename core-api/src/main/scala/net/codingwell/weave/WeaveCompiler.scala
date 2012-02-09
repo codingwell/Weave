@@ -80,7 +80,7 @@ case class WeaveModule() extends AbstractModule {
 class WeaveCompiler @Inject() ( @Named("WeaveActor") val weaveActor:ActorRef ) {
 
   def compile( files:Seq[WeaveFile] ):Unit = {
-    val future = weaveActor ? WeaveActor.QueueFile( new NativeWeaveFile( new File("../samples/test2.silk"), "silk") )
+    val future = weaveActor ? WeaveActor.QueueFile( new NativeWeaveFile( new File("../samples/test3.silk"), "silk") )
     future.as[Symbol] match {
       case Some('Done) => println("YAY")
       case Some('Fail) => println("x.x")

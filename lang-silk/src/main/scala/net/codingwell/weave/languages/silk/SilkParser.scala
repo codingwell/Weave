@@ -16,41 +16,53 @@ import org.parboiled.common.FileUtils
 
 class SilkParser(val buffer: IncludableInputBuffer[String]) extends Parser
 {
+  def File = { OWhiteSpace ~ zeroOrMore(GlobalStatement) ~~> ast.File ~ EOI }
 
-  sealed abstract class AstNode
-  case class ASTFile(members: List[ASTGlobalStatement])
-  sealed abstract class ASTGlobalStatement
-  case object ASTUsing extends ASTGlobalStatement
-  case object ASTInclude extends ASTGlobalStatement
-  case object PlaceHolder extends AstNode
-  
-  def File = rule { OWhiteSpace ~ zeroOrMore(ZGlobalStatement) ~~> ast.File ~ EOI }
-  
-  def ZGlobalStatement = { ZImport | ZImportViral }
-  def ZImport = rule { "import" ~ WhiteSpace ~ ZPackageSpecification ~~> ast.Import }
-  def ZImportViral = rule { "importviral" ~ WhiteSpace ~ ZPackageSpecification ~~> ast.ImportViral }
-  def ZPackageSpecification = rule { oneOrMore( ZIdentifier, "." ) ~~> ast.PackageSpecification }
-  def ZIdentifier = rule { ID ~> ast.Identifier }
+  def GlobalStatement = rule { Import | ImportViral | Module }
+  def Import = rule { "import" ~ WhiteSpace ~ PackageSpecification ~~> ast.Import ~ OWhiteSpace ~ SEMI }
+  def ImportViral = rule { "importviral" ~ WhiteSpace ~ PackageSpecification ~~> ast.ImportViral ~ OWhiteSpace ~ SEMI }
+  def PackageSpecification = rule { oneOrMore( Identifier, "." ) ~~> ast.PackageSpecification }
 
+  def Identifier = rule { ID ~> ast.Identifier }
 
-  def GlobalStatement = rule { Using | TempInclude }
-  
-  def TempInclude = rule { Include ~ push(ASTInclude) }
-  
-  def DoInclude(s:ast.QuotedString, r:IndexRange, context:Context[Any]):Unit =
-  {
-    println( "DOINCLUDE: " + s.text + "  " + r.toString() )
-    buffer.include( r.end, Preprocessor.StripComments( FileUtils.readAllText(s.text) ), s.text, r.end-r.start);
-    println(s.text)
-  }
-  
-  def Include = rule { IncludeInternal ~>> withContext( OriginalIndexRange ) ~~% withContext(DoInclude _) }
-  def IncludeInternal = rule { "include" ~ WhiteSpace ~ SilkString ~ SEMI }
-  
-  def Using = rule { "using" ~ WhiteSpace ~ PackageSpec ~ SEMI ~ push(ASTUsing) }
-  
+  def Module = rule { "module" ~ WhiteSpace ~ Identifier ~ OWhiteSpace ~ zeroOrMore(ModuleParameter) ~ Scope ~~> ast.Module }
+  def ModuleParameter = rule { Direction ~ WhiteSpace ~ TypeSpecification ~ WhiteSpace ~ Identifier ~ OWhiteSpace ~ SEMI ~~> ast.Parameter }
+
+  def Direction = rule { ("in" | "out") ~> ast.Direction }
+  def TypeSpecification = rule { PlainType }
+  def PlainType = rule { Identifier ~~> ast.PlainType }
+  def LiteralType = rule { WhiteSpace }//TODO
+  def NumberType = rule { WhiteSpace }//TODO
+  def ArrayType = rule { WhiteSpace }//TODO
+
+  def Scope = rule { "{" ~ OWhiteSpace ~ zeroOrMore(Statement) ~ "}" ~~> ast.Scope ~ OWhiteSpace }
+
+  def Statement:Rule1[ast.Statement] = rule { GlobalStatement | ExpressionStatement | Instantiation }
+
+  def ExpressionStatement = rule { ExpressionGroup ~ SEMI ~~> ast.ExpressionStatement }
+
+  def ExpressionGroup = rule { oneOrMore( Expression, OWhiteSpace ) ~~> ast.ExpressionGroup ~ OWhiteSpace }
+
+  def Expression:Rule1[ast.Expression] = rule { SimpleExpression ~ ChainExpression ~~> ast.Expression }
+  def SimpleExpression = rule { Identifier | ParenExpression }
+  def ChainExpression:Rule1[Option[ast.ChainExpression]] = rule { optional( ArrayExpression | MemberDereference ) }
+
+  def ParenExpression = rule { "(" ~ OWhiteSpace ~ ExpressionGroup ~ ")" }
+
+  def ArrayExpression = rule { "[" ~ OWhiteSpace ~ ExpressionGroup ~ "]" ~ OWhiteSpace ~ ChainExpression ~~> ast.ArrayExpression }
+  def MemberDereference = rule { "." ~ Identifier ~ ChainExpression ~~> ast.MemberDereference }
+
+  //def ArrayExpression = rule { Expression ~ "[" ~ OWhiteSpace ~ Expression ~ "]" ~~> ast.ArrayExpression }
+  //TODO Inline Array Expression. AKA. {a,b,c,d}
+  //def InlineArrayExpression = rule { }
+  //def MemberDereference = rule { Expression ~ "." ~ Identifier ~~> ast.MemberDereference }
+  //def ParenExpression = rule { "(" ~ OWhiteSpace ~ ExpressionGroup ~ ")" }
+
+  def Instantiation = rule { "var" ~ WhiteSpace ~ Identifier ~ WhiteSpace ~ TypeSpecification ~ OWhiteSpace ~ SEMI ~~> ast.Instantiation }
+
   def SEMI = rule("';'") { ";" ~ OWhiteSpace }
   
+  @Deprecated
   def PackageSpec = rule { oneOrMore( ID, "." ) }
   def ID = rule { oneOrMore( !anyOf(".,{}[]; \n\r\t\f") ~ ANY ) }//TODO this must be formalized with whitespace rule
   
@@ -64,6 +76,6 @@ class SilkParser(val buffer: IncludableInputBuffer[String]) extends Parser
   //Use scala's
   
   def SilkString = rule("String") { "\"" ~ zeroOrMore( !anyOf("\r\n\"\\") ~ ANY ) ~> ((s:String) => s) ~>> withContext( OriginalIndexRange ) ~~> ast.QuotedString ~ "\"" ~ OWhiteSpace }
-  def WhiteSpace: Rule0 = rule { oneOrMore(anyOf(" \n\r\t\f")) }
-  def OWhiteSpace: Rule0 = rule("WhiteSpace") { optional( WhiteSpace ) }
+  def WhiteSpace: Rule0 = rule("Whitespace") { oneOrMore(anyOf(" \n\r\t\f")) }
+  def OWhiteSpace: Rule0 = rule("Whitespace") { optional( WhiteSpace ) }
 }

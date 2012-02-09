@@ -12,6 +12,7 @@ sealed abstract class Statement
 
 class GlobalStatement() extends Statement {}
 
+//case class Module( val identifier:Identifier ) extends GlobalStatement {}
 case class Module( val identifier:Identifier, val parameters:Seq[Parameter] , val scope:Scope ) extends GlobalStatement {}
 class ImportStatement( val packagespec:PackageSpecification ) extends GlobalStatement {}
 class TypeDeclaration( val typespec:TypeSpecification ) extends GlobalStatement {}
@@ -37,14 +38,25 @@ class ImportViral( packagespec:PackageSpecification ) extends ImportStatement( p
 
 case class PackageSpecification( val identifiers:Seq[Identifier] ) {}
 
-case class Parameter( val identifier:Identifier, val direction:Direction, val typespec:TypeSpecification ) {}
+case class Parameter( val direction:Direction, val typespec:TypeSpecification, val identifier:Identifier ) {}
 
-case class Identifier( val name:String ) extends Expression {}
-case class Direction() {}
+case class Identifier( val name:String ) extends SimpleExpression {}
+case class Direction( val value:String ) {} //TODO:Should this have subclasses for directions?
 
-case class Scope( val statement:Seq[Statement] ) extends Statement {}
+case class Scope( val statements:Seq[Statement] ) extends Statement {}
 
-class Expression() extends Statement {}
+case class ExpressionStatement( val body:ExpressionGroup ) extends Statement {}
+
+case class ExpressionGroup( val expressions:Seq[Expression] ) extends SimpleExpression {}
+
+case class Expression( val simple:SimpleExpression, val next:Option[ChainExpression] ) {}
+sealed abstract class SimpleExpression {}
+sealed abstract class ChainExpression {}
+case class MemberDereference( val member:Identifier, val next:Option[ChainExpression] ) extends ChainExpression {}
+case class ArrayExpression( val index:ExpressionGroup, val next:Option[ChainExpression] ) extends ChainExpression {}
+//case class ArrayExpression( val base:Expression, val index:Expression ) extends Expression {}
+//case class MemberDereference( val base:Expression, val member:Identifier ) extends Expression {}
+
 case class Instantiation( val identifier:Identifier, instancetype:TypeSpecification ) extends Statement {}
 
 case class ForLoop( val init:Expression, val conditional:Expression, val post:Expression, val body:Statement ) extends Statement {}

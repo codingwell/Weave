@@ -1,0 +1,15 @@
+import a.b.c;
+importviral b.c.d;
+
+module fulladder
+ in  bit a;
+ in  bit b;
+ in  bit c_in;
+ out bit sum;
+ out bit c_out;
+{
+   var bit s1 ;
+   s1 = a ^b;
+   sum = s1^ c_in;
+   c_out = ( a & b ) | (s1 & c_in);
+}
