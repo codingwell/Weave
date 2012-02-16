@@ -1,3 +1,8 @@
+// Copyright (c) 2011 Thomas Suckow
+// are made available under the terms of the Eclipse Public License v1.0 
+// which accompanies this distribution, and is available at 
+// http://www.eclipse.org/legal/epl-v10.html
+
 package net.codingwell.weave.languages.silk
 
 import java.util.Arrays
@@ -49,7 +54,10 @@ class SilkCompiler extends Actor {
       System.out.println("Parse OK. :D");
 
       result.result match {
-        case Some(f:ast.File) => ""//TODO
+        case Some(file:ast.File) =>
+          val symboltable = new SymbolTable
+          val visitor = new ASTRTLVisitor( symboltable )
+          visitor visit file
         case _ => throw new Error("Slik AST missing")
       }
     }

@@ -28,11 +28,13 @@ case class ArrayType( val basetype:TypeSpecification ) extends TypeSpecification
 
 object Import extends Function1[PackageSpecification,Import] {
    def apply( packagespec:PackageSpecification ):Import = new Import( packagespec )
+   def unapply( i:Import ):Option[PackageSpecification] = Some(i.packagespec)
 }
 class Import( packagespec:PackageSpecification ) extends ImportStatement( packagespec ) {}
 
 object ImportViral extends Function1[PackageSpecification,ImportViral] {
-   def apply( packagespec:PackageSpecification ):ImportViral = new ImportViral( packagespec )
+   def apply( packagespec:PackageSpecification ) = new ImportViral( packagespec )
+   def unapply( i:ImportViral ):Option[PackageSpecification] = Some(i.packagespec)
 }
 class ImportViral( packagespec:PackageSpecification ) extends ImportStatement( packagespec ) {}
 
