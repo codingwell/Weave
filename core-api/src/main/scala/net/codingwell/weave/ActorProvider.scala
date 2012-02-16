@@ -9,8 +9,8 @@ package net.codingwell.weave
 import com.google.inject._
 import akka.actor._
 
-class ActorProvider[T <: Actor] @Inject() ( val m:TypeLiteral[T], val injector:Injector ) extends Provider[ActorRef] {
+class ActorProvider[T <: Actor] @Inject() ( val m:TypeLiteral[T], val system:ActorSystem, val injector:Injector ) extends Provider[ActorRef] {
   def get = {
-    Actor.actorOf( injector.getInstance( Key.get( m ) ) ).start
+    system.actorOf( Props( injector.getInstance( Key.get( m ) ) ) )
   }
 }

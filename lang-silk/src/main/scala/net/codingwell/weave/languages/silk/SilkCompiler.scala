@@ -13,6 +13,10 @@ import net.codingwell.parboiled.ErrorUtils
 import net.codingwell.parboiled.IncludableInputBuffer
 import net.codingwell.weave._
 import akka.actor._
+import akka.dispatch._
+import akka.pattern.{ ask, pipe }
+import akka.util.Timeout
+import akka.util.duration._
 
 import scala.collection.mutable.{Map => MutableMap}
 
@@ -22,13 +26,10 @@ class SilkCompiler extends Actor {
 
   def receive = {
     case WeaveCompiler.NotifyWork(actor, source,target) =>
-      val work = actor ? WeaveCompiler.RequestWork( source, target )
-      work.as[WeaveCompiler.Work[WeaveFile]] match {
-        case Some(WeaveCompiler.Work(file)) =>
-          compile( file )
-        case None =>
-        case _ =>
-      }
+      implicit val timeout = Timeout(5 seconds)
+      val future = actor.ask( WeaveCompiler.RequestWork( source, target ) ).mapTo[WeaveCompiler.Work[WeaveFile]]
+      val work = Await.result( future, timeout.duration )
+      if(work != null) compile( work.value )
   }
 
   def compile( file:WeaveFile ):Unit = {

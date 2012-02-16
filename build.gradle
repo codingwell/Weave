@@ -12,7 +12,7 @@ libraries = [
    guice: 'com.google.inject:guice:3.0',
    guice_multibindings: 'com.google.inject.extensions:guice-multibindings:3.0',
    commons_io: 'commons-io:commons-io:2.1',
-   akka_actor: 'se.scalablesolutions.akka:akka-actor:1.3'
+   akka_actor: 'com.typesafe.akka:akka-actor:2.0-RC1'
 ]
 
 subprojects {

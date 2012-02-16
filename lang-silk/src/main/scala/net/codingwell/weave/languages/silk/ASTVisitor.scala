@@ -31,9 +31,12 @@ class ASTRTLVisitor(val symbols:SymbolTable) {
           visit( scope )
         }
       case ast.Scope( statements ) =>
-        pushScope
-        println( "  >Scope" )
-        popScope
+        subScope {
+          println( "  >Scope" )
+          statements foreach ( visit _ )
+        }
+      case ast.ExpressionStatement( body ) =>
+        println( "   ExpressionStatement" )
       case unknown =>
         println("Unknown ast member: " + unknown.toString )
     }

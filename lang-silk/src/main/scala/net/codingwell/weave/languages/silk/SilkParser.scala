@@ -37,7 +37,7 @@ class SilkParser(val buffer: IncludableInputBuffer[String]) extends Parser
 
   def Scope = rule { "{" ~ OWhiteSpace ~ zeroOrMore(Statement) ~ "}" ~~> ast.Scope ~ OWhiteSpace }
 
-  def Statement:Rule1[ast.Statement] = rule { GlobalStatement | ExpressionStatement | Instantiation }
+  def Statement:Rule1[ast.Statement] = rule { GlobalStatement | Instantiation | ExpressionStatement }
 
   def ExpressionStatement = rule { ExpressionGroup ~ SEMI ~~> ast.ExpressionStatement }
 

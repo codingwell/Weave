@@ -11,6 +11,7 @@ import net.codingwell.jansi.AnsiConsole
 import net.codingwell.weave._
 import net.codingwell.weave.languages.silk._
 import java.io.File
+import akka.actor._
 
 object Main {
 
@@ -27,7 +28,12 @@ object Main {
       val injector:Injector = Guice.createInjector(
          LocalExecutorModule(),
          SilkCompilerModule(),
-         WeaveModule()
+         WeaveModule(),
+         new AbstractModule() {
+           def configure = {
+             bind(classOf[ActorSystem]).toInstance( ActorSystem("WeaveSystem") )
+           }
+         }
       )
 
       //Get the compiler
@@ -38,5 +44,8 @@ object Main {
       val files = List( file )
 
       compiler.compile( files )
+
+      var system:ActorSystem = injector.getInstance(classOf[ActorSystem])
+      system shutdown
    }
 }
