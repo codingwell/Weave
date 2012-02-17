@@ -59,7 +59,7 @@ case class ArrayExpression( val index:ExpressionGroup, val next:Option[ChainExpr
 //case class ArrayExpression( val base:Expression, val index:Expression ) extends Expression {}
 //case class MemberDereference( val base:Expression, val member:Identifier ) extends Expression {}
 
-case class Instantiation( val identifier:Identifier, instancetype:TypeSpecification ) extends Statement {}
+case class Instantiation( instancetype:TypeSpecification, val identifier:Identifier ) extends Statement {}
 
 case class ForLoop( val init:Expression, val conditional:Expression, val post:Expression, val body:Statement ) extends Statement {}
 case class WhileLoop( val conditional:Expression, val body:Statement ) extends Statement {}

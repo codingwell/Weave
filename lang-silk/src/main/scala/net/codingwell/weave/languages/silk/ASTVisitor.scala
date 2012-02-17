@@ -35,8 +35,16 @@ class ASTRTLVisitor(val symbols:SymbolTable) {
           println( "  >Scope" )
           statements foreach ( visit _ )
         }
+      case ast.Instantiation( typename, name ) =>
+        println( "   Instantiation " + name.name )
       case ast.ExpressionStatement( body ) =>
         println( "   ExpressionStatement" )
+        body.expressions foreach ( visit _ )
+      case ast.Expression( simple, ochain ) =>
+        visit( simple )
+        ochain map ( visit _ )
+      case ast.Identifier( name ) =>
+        println( "   id: " + name )
       case unknown =>
         println("Unknown ast member: " + unknown.toString )
     }

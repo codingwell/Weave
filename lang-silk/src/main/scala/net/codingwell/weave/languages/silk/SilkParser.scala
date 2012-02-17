@@ -58,24 +58,30 @@ class SilkParser(val buffer: IncludableInputBuffer[String]) extends Parser
   //def MemberDereference = rule { Expression ~ "." ~ Identifier ~~> ast.MemberDereference }
   //def ParenExpression = rule { "(" ~ OWhiteSpace ~ ExpressionGroup ~ ")" }
 
-  def Instantiation = rule { "var" ~ WhiteSpace ~ Identifier ~ WhiteSpace ~ TypeSpecification ~ OWhiteSpace ~ SEMI ~~> ast.Instantiation }
+  def Instantiation = rule { "var" ~ WhiteSpace ~ TypeSpecification ~ WhiteSpace ~ Identifier ~ OWhiteSpace ~ SEMI ~~> ast.Instantiation }
 
   def SEMI = rule("';'") { ";" ~ OWhiteSpace }
   
   @Deprecated
   def PackageSpec = rule { oneOrMore( ID, "." ) }
-  def ID = rule { oneOrMore( !anyOf(".,{}[]; \n\r\t\f") ~ ANY ) }//TODO this must be formalized with whitespace rule
+
+  def ID = rule { ( Letter ~ IDrest ) | Op }
+  def IDrest = rule { zeroOrMore( !OpEnd ~ ( Letter | Digit ) ) ~ optional( OpEnd ) }
   
   //TODO: AST
   def Number = rule { Decimal | Integer } //Order matters
   def Decimal = rule { oneOrMore( Digit ) ~  "." ~ oneOrMore( Digit ) }
   def Integer = rule { oneOrMore( Digit ) }
+  
+  def Letter = rule { "A"-"Z" | "a"-"z" | "$" | "_" }
+  def SpecialChar = rule { anyOf(".,{}[]();") }
+  def OpChar = rule { !SpecialChar ~ !WhiteSpaceChar ~ !Letter ~ !Digit ~ ("!"-"~") }
+  def Op = rule { oneOrMore( OpChar ) }
+  def OpEnd = rule { "_" ~ Op }
   def Digit = rule { "0"-"9" }
   
-  //ID Concept:
-  //Use scala's
-  
   def SilkString = rule("String") { "\"" ~ zeroOrMore( !anyOf("\r\n\"\\") ~ ANY ) ~> ((s:String) => s) ~>> withContext( OriginalIndexRange ) ~~> ast.QuotedString ~ "\"" ~ OWhiteSpace }
-  def WhiteSpace: Rule0 = rule("Whitespace") { oneOrMore(anyOf(" \n\r\t\f")) }
+  def WhiteSpaceChar = rule { anyOf(" \n\r\t\f") }
+  def WhiteSpace: Rule0 = rule("Whitespace") { oneOrMore( WhiteSpaceChar ) }
   def OWhiteSpace: Rule0 = rule("Whitespace") { optional( WhiteSpace ) }
 }
