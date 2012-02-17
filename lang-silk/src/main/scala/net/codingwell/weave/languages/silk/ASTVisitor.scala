@@ -22,9 +22,9 @@ class ASTRTLVisitor(val symbols:SymbolTable) {
           globalStatements foreach ( visit _ )
         }
       case ast.Import( packageSpecification ) =>
-        getScope().locator.add()
+        getScope().packages :+ new PackageRef
       case ast.ImportViral( packageSpecification ) =>
-        getScope().locator.add()
+        getScope().packages :+ new PackageRef
       case ast.Module( identifier, parameters, scope ) =>
         println( "+-Module:" + identifier.toString )
         subScope {

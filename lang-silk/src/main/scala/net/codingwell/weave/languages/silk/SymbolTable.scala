@@ -5,7 +5,7 @@
 
 package net.codingwell.weave.languages.silk
 
-import scala.collection.mutable.{HashMap => MutableHashMap}
+import scala.collection.mutable.{HashMap => MutableHashMap, LinkedList => MutableLinkedList}
 
 class SymbolLocator {
   def add():Unit = {
@@ -13,8 +13,22 @@ class SymbolLocator {
   }
 }
 
+class PackageRef {
+}
+
+class Symbol {
+}
+
+case class ModuleSymbol() extends Symbol {
+}
+case class DeclarationSymbol() extends Symbol {
+}
+case class TypeSymbol() extends Symbol {
+}
+
 class SymbolScope( val parent:Option[SymbolScope] = None ) {
-  val locator:SymbolLocator = new SymbolLocator
+  val packages = new MutableLinkedList[PackageRef]
+  val symbols = new MutableHashMap[String,Symbol]
 }
 
 class SymbolTable {
