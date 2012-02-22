@@ -59,6 +59,8 @@ class SilkCompiler extends Actor {
           val symboltable = new SymbolTable
           val visitor = new ASTRTLVisitor( symboltable )
           visitor visit file
+          val semantic = new Semantic( symboltable )
+          semantic.process()
         case _ => throw new Error("Slik AST missing")
       }
     }

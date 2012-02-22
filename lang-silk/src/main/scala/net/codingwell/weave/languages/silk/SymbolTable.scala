@@ -5,7 +5,8 @@
 
 package net.codingwell.weave.languages.silk
 
-import scala.collection.mutable.{HashMap => MutableHashMap, LinkedList => MutableLinkedList}
+import scala.collection.{ mutable => mu }
+import net.codingwell.weave.languages.silk.exceptions._
 
 class SymbolLocator {
   def add():Unit = {
@@ -19,19 +20,38 @@ class PackageRef {
 class Symbol {
 }
 
-case class ModuleSymbol() extends Symbol {
+class ModuleParameters() {
+  val orderedParameters = new mu.ArrayBuffer[Connection]
+  val namedParameters = new mu.HashMap[String,Connection]
+
+  def appendParameter( name:String, connection:Connection ) = {
+    orderedParameters += connection
+    namedParameters += ( ( name, connection ) )
+  }
 }
-case class DeclarationSymbol() extends Symbol {
+
+case class ModuleSymbol( val name:String, val parameters:ModuleParameters, val scope:SymbolScope ) extends Symbol {
+}
+case class DeclarationSymbol( val connection:Connection ) extends Symbol {
 }
 case class TypeSymbol() extends Symbol {
 }
 
 class SymbolScope( val parent:Option[SymbolScope] = None ) {
-  val packages = new MutableLinkedList[PackageRef]
-  val symbols = new MutableHashMap[String,Symbol]
+  val packages = new mu.ArrayBuffer[PackageRef]
+  val symbols = new mu.HashMap[String,Symbol]
+
+  def addSymbol( name:String, symbol:Symbol ) = {
+    symbols get( name ) match {
+      case Some( oldsymbol ) => throw DuplicateSymbolException( name, symbol, oldsymbol )
+      case None => symbols += ( (name, symbol) )
+    }
+  }
 }
 
 class SymbolTable {
+  var scope:Option[SymbolScope] = None
+  val modules = new mu.ArrayBuffer[ModuleSymbol]
 }
 
 //Do not use, for later expansion
