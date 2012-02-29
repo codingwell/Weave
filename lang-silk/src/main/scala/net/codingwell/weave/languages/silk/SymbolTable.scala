@@ -8,6 +8,8 @@ package net.codingwell.weave.languages.silk
 import scala.collection.{ mutable => mu }
 import net.codingwell.weave.languages.silk.exceptions._
 
+class SemanticStatement ( val scope:SymbolScope, val statement:ast.Statement ) {}
+
 class SymbolLocator {
   def add():Unit = {
     //Todo
@@ -30,11 +32,68 @@ class ModuleParameters() {
   }
 }
 
-case class ModuleSymbol( val name:String, val parameters:ModuleParameters, val scope:SymbolScope ) extends Symbol {
+case class ModulePendingSymbolics() {
+  val statements = new mu.ArrayBuffer[SemanticStatement]
 }
+
+case class ModuleSymbol( val name:String, val parameters:ModuleParameters/*, val scope:SymbolScope*/ ) extends Symbol {
+}
+
+object built_in {
+  def get_&():ModuleSymbol = {
+    val a = new Connection
+    val b = new Connection
+    val result = new Connection
+    result.connectSignal( new Gate_AND( a, b ) )
+
+    val parameters = new ModuleParameters
+    parameters.appendParameter( "a", a )
+    parameters.appendParameter( "b", b )
+    parameters.appendParameter( "result", result )
+
+    new ModuleSymbol( "&", parameters )
+  }
+  def get_|():ModuleSymbol = {
+    val a = new Connection
+    val b = new Connection
+    val result = new Connection
+    result.connectSignal( new Gate_OR( a, b ) )
+
+    val parameters = new ModuleParameters
+    parameters.appendParameter( "a", a )
+    parameters.appendParameter( "b", b )
+    parameters.appendParameter( "result", result )
+
+    new ModuleSymbol( "|", parameters )
+  }
+  def get_^():ModuleSymbol = {
+    val a = new Connection
+    val b = new Connection
+    val result = new Connection
+    result.connectSignal( new Gate_XOR( a, b ) )
+
+    val parameters = new ModuleParameters
+    parameters.appendParameter( "a", a )
+    parameters.appendParameter( "b", b )
+    parameters.appendParameter( "result", result )
+
+    new ModuleSymbol( "^", parameters )
+  }
+}
+
+//This isn't right, but right concept
+//Maybe move the statements into another class, we don't really seem to ever refer to the module from them anyway.
+class AssignmentModuleSymbol( parameters:ModuleParameters ) extends ModuleSymbol( "", parameters )
+
 case class DeclarationSymbol( val connection:Connection ) extends Symbol {
 }
 case class TypeSymbol() extends Symbol {
+}
+
+class DefaultSymbolScope() extends SymbolScope( None ) {
+  addSymbol( "^", built_in.get_^ )
+  addSymbol( "|", built_in.get_| )
+  addSymbol( "&", built_in.get_& )
 }
 
 class SymbolScope( val parent:Option[SymbolScope] = None ) {
@@ -47,11 +106,32 @@ class SymbolScope( val parent:Option[SymbolScope] = None ) {
       case None => symbols += ( (name, symbol) )
     }
   }
+
+  def lookup( name:String ):Option[Symbol] = {
+    symbols get name match {
+      case value @ Some( symbol ) =>
+        value
+      case None =>
+        parent match {
+          case Some( scope ) =>
+            scope lookup name
+          case None =>
+            None
+        }
+    }
+  }
 }
 
 class SymbolTable {
-  var scope:Option[SymbolScope] = None
+  var scope:Option[SymbolScope] = Some( new DefaultSymbolScope )
   val modules = new mu.ArrayBuffer[ModuleSymbol]
+  val modulespending = new mu.ArrayBuffer[ModulePendingSymbolics]
+
+  def pushScope() = scope = Some(new SymbolScope( scope ))
+  def popScope() = scope match { case Some(thisscope) => scope = thisscope.parent case None => None }
+  def subScope( body : => Unit ) = { pushScope; body; popScope }
+  def getScope() = scope match { case Some(thisscope) => thisscope case None => throw new Exception("Missing Scope") }
+  def addModule( module:ModuleSymbol, modulepending:ModulePendingSymbolics ) = { modules += module; modulespending += modulepending }
 }
 
 //Do not use, for later expansion

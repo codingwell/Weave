@@ -7,45 +7,73 @@ package net.codingwell.weave.languages.silk
 
 import net.codingwell.weave.languages.silk.exceptions._
 
-class ASTRTLVisitor(val symbols:SymbolTable) {
+class ASTModuleVisitor ( val module:ModulePendingSymbolics, val mainvisitor:ASTRTLVisitor, val symbols:SymbolTable )
+{
+  def handleScope( scope:ast.Scope ) = {
+    scope.statements foreach ( visit _ )
+  }
 
-  def pushScope() = symbols.scope = Some(new SymbolScope( symbols.scope ))
-  def popScope() = symbols.scope match { case Some(scope) => symbols.scope = scope.parent case None => None }
-  def subScope( body : => Unit ) = { pushScope; body; popScope }
-  def getScope() = symbols.scope match { case Some(scope) => scope case None => throw new Exception("Missing Scope") }
-  def addModule( module:ModuleSymbol ) = {symbols.modules += module }
-
-  def visit( obj:AnyRef ):Unit = {
+  def visit( obj:ast.Statement ):Unit = {
     obj match {
-      case ast.File( globalStatements ) =>
-        subScope {
-          println( "-File" )
-          globalStatements foreach ( visit _ )
-        }
-      case ast.Import( packageSpecification ) =>
-        getScope().packages :+ new PackageRef
-      case ast.ImportViral( packageSpecification ) =>
-        getScope().packages :+ new PackageRef
-      case ast.Module( identifier, parameters, scope ) =>
-        println( "+-Module:" + identifier.toString )
-        val parentScope = getScope()
-        subScope {
-          val moduleparameters = new ModuleParameters()
-          parameters foreach ( handleParameter( _, moduleparameters ) )
-          val module = new ModuleSymbol( identifier.name, moduleparameters, getScope() )
-          parentScope.addSymbol( identifier.name, module )
-          addModule( module )
-
-          handleScope( scope )
-        }
+      case submodule @ ast.Module( identifier, parameters, scope ) =>
+        mainvisitor visit submodule
       case scope @ ast.Scope( statements ) =>
-        subScope {
+        symbols.subScope {
           handleScope( scope )
         }
       case ast.Instantiation( typename, identifier ) =>
         println( "   Instantiation " + identifier.name )
         val decl = new DeclarationSymbol( new Connection() )
-        getScope().addSymbol( identifier.name, decl )
+        symbols.getScope().addSymbol( identifier.name, decl )
+      case statement @ ast.ExpressionStatement( body ) =>
+        println( "   ExpressionStatement: " + body )
+        module.statements += new SemanticStatement( symbols.getScope(), statement )
+      case unknown =>
+        mainvisitor visit unknown
+    }
+  }
+}
+
+class ASTRTLVisitor(val symbols:SymbolTable) {
+
+/*  def pushScope() = symbols.scope = Some(new SymbolScope( symbols.scope ))
+  def popScope() = symbols.scope match { case Some(scope) => symbols.scope = scope.parent case None => None }
+  def subScope( body : => Unit ) = { pushScope; body; popScope }
+  def getScope() = symbols.scope match { case Some(scope) => scope case None => throw new Exception("Missing Scope") }
+  def addModule( module:ModuleSymbol ) = {symbols.modules += module }
+*/
+  def visit( file:ast.File ):Unit = {
+    symbols.subScope {
+      println( "-File" )
+      file.members foreach ( visit _ )
+    }
+  }
+
+  def visit( obj:ast.Statement ):Unit = {
+    obj match {
+/*      case ast.File( globalStatements ) =>
+        symbols.subScope {
+          println( "-File" )
+          globalStatements foreach ( visit _ )
+        }
+  */    case ast.Import( packageSpecification ) =>
+        symbols.getScope().packages :+ new PackageRef
+      case ast.ImportViral( packageSpecification ) =>
+        symbols.getScope().packages :+ new PackageRef
+      case ast.Module( identifier, parameters, scope ) =>
+        println( "+-Module:" + identifier.toString )
+        val parentScope = symbols.getScope()
+        symbols.subScope {
+          val moduleparameters = new ModuleParameters()
+          parameters foreach ( handleParameter( _, moduleparameters ) )
+          val module = new ModuleSymbol( identifier.name, moduleparameters/*, symbols.getScope()*/ )
+          val modulepending = new ModulePendingSymbolics()
+          parentScope.addSymbol( identifier.name, module )
+          symbols.addModule( module, modulepending )
+
+          new ASTModuleVisitor( modulepending, this, symbols ).handleScope( scope )
+        }
+        /*
       case ast.ExpressionStatement( body ) =>
         println( "   ExpressionStatement" )
         body.expressions foreach ( visit _ )
@@ -54,6 +82,7 @@ class ASTRTLVisitor(val symbols:SymbolTable) {
         ochain map ( visit _ )
       case ast.Identifier( name ) =>
         println( "   id: " + name )
+        */
       case unknown =>
         println("Unknown ast member: " + unknown.toString )
     }
@@ -78,7 +107,7 @@ class ASTRTLVisitor(val symbols:SymbolTable) {
         throw InvalidDirectionException(unknown)
     }
 
-    getScope().addSymbol( parameter.identifier.name, DeclarationSymbol( scopeconnection ) )
+    symbols.getScope().addSymbol( parameter.identifier.name, DeclarationSymbol( scopeconnection ) )
     moduleparameters.appendParameter( parameter.identifier.name, moduleconnection )
   }
 }

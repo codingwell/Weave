@@ -11,10 +11,5 @@ module fulladder
    var bit s1 ;
    s1 = a ^b;
    sum = s1^ c_in;
-   c_out = ( a & b ) | (s1 & c_in);
-   var bit _s1;
-   var bit s1_;
-   var bit s1_s;
-   var bit s1_^;
-   var bit ^;
+   c_out = ( a & b ) | (s1&c_in);
 }
