@@ -79,6 +79,19 @@ object built_in {
 
     new ModuleSymbol( "^", parameters )
   }
+  def get_=():ModuleSymbol = {
+    val a = new Connection
+    val b = new Connection
+
+    a.connectSignal( b )
+
+    val parameters = new ModuleParameters
+    parameters.appendParameter( "a", a )
+    parameters.appendParameter( "b", b )
+    parameters.appendParameter( "result", a )
+
+    new ModuleSymbol( "=", parameters )
+  }
 }
 
 //This isn't right, but right concept
@@ -94,6 +107,7 @@ class DefaultSymbolScope() extends SymbolScope( None ) {
   addSymbol( "^", built_in.get_^ )
   addSymbol( "|", built_in.get_| )
   addSymbol( "&", built_in.get_& )
+  addSymbol( "=", built_in.get_= )
 }
 
 class SymbolScope( val parent:Option[SymbolScope] = None ) {
