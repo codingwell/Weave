@@ -37,11 +37,7 @@ class Connection () extends ConnectionSignal {
   def isDriven() = { ! input.isEmpty }
 }
 
-class Value () { }
-
-class ConnectionValue () extends Value {}
-
-class ModuleInstance () extends Value {}
+class ModuleInstance ( module:ModuleSymbol, lhs:ConnectionSignal, rhs:ConnectionSignal ) extends ConnectionSignal {}
 
 class TemporaryConnection () extends ConnectionSignal {}
 
@@ -52,9 +48,11 @@ class Gate_OR  ( val a:ConnectionSignal, val b:ConnectionSignal ) extends Connec
 trait ExpressionState
 {
   def processExpression( expression:ast.Expression ):Unit
+
+  def getValue():ConnectionSignal
 }
 
-class ExpressionModuleState( val machine:ExpressionStateMachine, val value:Unit ) extends ExpressionState {
+class ExpressionModuleState( val machine:ExpressionStateMachine, val value:ConnectionSignal ) extends ExpressionState {
   def processExpression( expression:ast.Expression ) = {
     expression.next match {
       case None =>
@@ -67,10 +65,10 @@ class ExpressionModuleState( val machine:ExpressionStateMachine, val value:Unit 
             symbol match {
               case Some( DeclarationSymbol( connection ) ) =>
                 throw new Exception("Value followed by value")
-              case Some( ModuleSymbol( name, parameters ) ) =>
+              case Some( symbol @ ModuleSymbol( name, parameters ) ) =>
                 //TODO: Handle parameters
                 println( "ID is Module in Module State" )
-                machine.state = new ExpressionModuleHalfState( machine, (), () )
+                machine.state = new ExpressionModuleHalfState( machine, symbol, value )
               case None =>
                 println( "No ID" )
             }
@@ -85,9 +83,11 @@ class ExpressionModuleState( val machine:ExpressionStateMachine, val value:Unit 
         println("Chain Expressions not implemented." )
     }
   }
+
+  def getValue() = { value }
 }
 
-class ExpressionModuleHalfState( val machine:ExpressionStateMachine, val module:Unit, val rhs:Unit ) extends ExpressionState {
+class ExpressionModuleHalfState( val machine:ExpressionStateMachine, val module:ModuleSymbol, val rhs:ConnectionSignal ) extends ExpressionState {
   def processExpression( expression:ast.Expression ) = {
     expression.next match {
       case None =>
@@ -100,7 +100,7 @@ class ExpressionModuleHalfState( val machine:ExpressionStateMachine, val module:
             symbol match {
               case Some( DeclarationSymbol( connection ) ) =>
                 println( "ID is Value in HalfState" )
-                machine.state = new ExpressionModuleState( machine, () )
+                machine.state = new ExpressionModuleState( machine, new ModuleInstance( module, connection, rhs ) )
               case Some( ModuleSymbol( name, parameters ) ) =>
                 println( "ID is Module" )
                 throw new Exception("Value expected got module")
@@ -115,7 +115,7 @@ class ExpressionModuleHalfState( val machine:ExpressionStateMachine, val module:
             val submachine = new ExpressionStateMachine( machine.scope, machine.table )
             expressions.reverseIterator foreach ( submachine.processExpression _ )
             
-            machine.state = new ExpressionModuleState( machine, () )
+            machine.state = new ExpressionModuleState( machine, new ModuleInstance( module, submachine.getValue, rhs ) )
 
           case unknown =>
             println( "Value State Unknown: " + unknown.toString() )
@@ -124,9 +124,11 @@ class ExpressionModuleHalfState( val machine:ExpressionStateMachine, val module:
         println("Chain Expressions not implemented." )
     }
   }
+
+  def getValue():ConnectionSignal = { throw new Exception("Module missing left-hand-side") }
 }
 
-class ExpressionValueState( val machine:ExpressionStateMachine, val value:Unit ) extends ExpressionState {
+class ExpressionValueState( val machine:ExpressionStateMachine, val value:ConnectionSignal ) extends ExpressionState {
   def processExpression( expression:ast.Expression ) = {
     expression.next match {
       case None =>
@@ -139,10 +141,10 @@ class ExpressionValueState( val machine:ExpressionStateMachine, val value:Unit )
             symbol match {
               case Some( DeclarationSymbol( connection ) ) =>
                 throw new Exception("Value followed by value")
-              case Some( ModuleSymbol( name, parameters ) ) =>
+              case Some( symbol @ ModuleSymbol( name, parameters ) ) =>
                 //TODO: Handle parameters
                 println( "ID is Module" )
-                machine.state = new ExpressionModuleHalfState( machine, (), () )
+                machine.state = new ExpressionModuleHalfState( machine, symbol, value )
               case None =>
                 println( "No ID" )
             }
@@ -158,9 +160,7 @@ class ExpressionValueState( val machine:ExpressionStateMachine, val value:Unit )
     }
   }
 
-  def getValue():Unit = {
-    value
-  }
+  def getValue():ConnectionSignal = { value }
 }
 
 class ExpressionValueEmptyState( val machine:ExpressionStateMachine ) extends ExpressionState {
@@ -176,7 +176,7 @@ class ExpressionValueEmptyState( val machine:ExpressionStateMachine ) extends Ex
 
             symbol match {
               case Some( DeclarationSymbol( connection ) ) =>
-                machine.state = new ExpressionValueState( machine, () )
+                machine.state = new ExpressionValueState( machine, connection )
               case Some( ModuleSymbol( name, parameters ) ) =>
                 println( "ID is Module" )
                 throw new Exception("Value expected got module")
@@ -192,7 +192,7 @@ class ExpressionValueEmptyState( val machine:ExpressionStateMachine ) extends Ex
             expressions.reverseIterator foreach ( submachine.processExpression _ )
             println( ")" )
 
-            machine.state = new ExpressionValueState( machine, () )
+            machine.state = new ExpressionValueState( machine, submachine.getValue )
           case unknown =>
             println( "Value State Unknown: " + unknown.toString() )
         }
@@ -201,9 +201,7 @@ class ExpressionValueEmptyState( val machine:ExpressionStateMachine ) extends Ex
     }
   }
 
-  def getValue():Unit = {
-        throw new Exception("Missing Value")
-  }
+  def getValue() = { throw new Exception("Missing Value") }
 }
 
 class ExpressionStateMachine( val scope:SymbolScope, val table:SymbolTable ) {
@@ -211,7 +209,7 @@ class ExpressionStateMachine( val scope:SymbolScope, val table:SymbolTable ) {
   
   def processExpression( expression:ast.Expression ):Unit = { state.processExpression( expression ) }
 
-  def getValue():Unit = {  }
+  def getValue():ConnectionSignal = { state.getValue }
 }
 
 class SemanticModule(  ) {

@@ -21,7 +21,12 @@ import akka.util.duration._
 import scala.collection.mutable.{Map => MutableMap}
 
 class SilkCompiler extends Actor {
-
+def timed[R](blockName:String)(block: =>R) = {
+  val start = System.currentTimeMillis
+    val result = block
+      println("Block (" + blockName + ") took " + (System.currentTimeMillis - start) + "ms.")
+        result
+        }
 //  val map = new MutableMap[UntypedChannel,String]
 
   def receive = {
@@ -29,21 +34,26 @@ class SilkCompiler extends Actor {
       implicit val timeout = Timeout(5 seconds)
       val future = actor.ask( WeaveCompiler.RequestWork( source, target ) ).mapTo[WeaveCompiler.Work[WeaveFile]]
       val work = Await.result( future, timeout.duration )
-      if(work != null) compile( work.value )
+      if(work != null) timed("Compiling")( compile( work.value ) )
   }
 
   def compile( file:WeaveFile ):Unit = {
-          println("File")
+    val start = System.currentTimeMillis
 
     val buffer = new IncludableInputBuffer[String]
-    buffer.include(0, Preprocessor.StripComments( file.contents ), file.name, 0);//Load the first file
+    timed("Stripping")( buffer.include(0, Preprocessor.StripComments( file.contents ), file.name, 0) )//Load the first file
+    println( ":1: " + (System.currentTimeMillis - start) )
 
     val parser = new net.codingwell.weave.languages.silk.SilkParser(buffer)
-    val parserunner = RecoveringParseRunner(parser.File)
+    println( ":2: " + (System.currentTimeMillis - start) )
+    val parserunner = RecoveringParseRunner(parser.File)//TODO: Cache this, takes 200ms to construct.
+    println( ":3: " + (System.currentTimeMillis - start) )
 
     val input = new Input( null, (A:Array[Char]) => buffer ) //Forces the use of our buffer
+    println( ":4: " + (System.currentTimeMillis - start) )
 
-    val result = parserunner.run( input )
+    val result = timed("Parsing")( parserunner.run( input ) )
+    println( ":5: " + (System.currentTimeMillis - start) )
 
     if( result.hasErrors() )
     {
@@ -58,12 +68,13 @@ class SilkCompiler extends Actor {
         case Some(file:ast.File) =>
           val symboltable = new SymbolTable
           val visitor = new ASTRTLVisitor( symboltable )
-          visitor visit file
+          timed("Visiting")( visitor visit file )
           val semantic = new Semantic( symboltable )
-          semantic.process()
+          timed("Semantic")( semantic.process )
         case _ => throw new Error("Slik AST missing")
       }
     }
+    println( ":: " + (System.currentTimeMillis - start) )
   }
 
   def supportedLanguages() = Set("Silk")

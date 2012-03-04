@@ -13,3 +13,13 @@ module fulladder
    sum = s1^ c_in;
    c_out = ( a & b ) | (s1&c_in);
 }
+
+module halfadder
+ in  bit a;
+ in  bit b;
+ out bit sum;
+ out bit c_out;
+{
+   sum = a ^ b;
+   c_out = a & b;
+}
