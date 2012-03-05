@@ -13,6 +13,8 @@ import akka.actor._
 import akka.util.Timeout
 import akka.util.duration._
 import akka.pattern.{ ask, pipe }
+import akka.pattern.{ ask, pipe }
+import akka.dispatch.Await
 import scala.collection.JavaConversions._
 import scala.collection.mutable.{Set => MutableSet, Queue => MutableQueue, HashSet => MutableHashSet}
 
@@ -22,6 +24,7 @@ object WeaveCompiler {
 
   //Outgoing
   case class RequestWork(val source:String, val target:String)
+  case class WorkCompleted[S](val value:S)
   
   case class Work[S](val value:S)
 
@@ -42,7 +45,7 @@ class WeaveActor ( val executors:MutableSet[ActorRef] ) extends Actor {
   }
 
   val pendingQueue = new MutableQueue[WeaveFile]
-  val workingQueue = new MutableQueue[Work]
+  val workingQueue = new MutableQueue[WeaveFile]
   val doneQueue = new MutableQueue[WeaveFile]
   val notifyWhenDone = new MutableHashSet[ActorRef]
 
@@ -50,15 +53,29 @@ class WeaveActor ( val executors:MutableSet[ActorRef] ) extends Actor {
     case QueueFile(file) =>
       pendingQueue enqueue file
       executors foreach ( _ ! WeaveCompiler.NotifyWork(self, "file",file.filetype) )
-      executors foreach ( _ ! WeaveCompiler.NotifyWork(self, "file",file.filetype) )
-      sender ! 'Fail
     case WeaveCompiler.RequestWork(source,target) =>
       if( !pendingQueue.isEmpty )
-        sender ! WeaveCompiler.Work( pendingQueue dequeue )
+      {
+        val item = ( pendingQueue dequeue )
+        workingQueue enqueue item
+        sender ! WeaveCompiler.Work( item )
+      }
       else
         sender ! null
-    case Quit =>
-      self ! akka.actor.PoisonPill
+    case WeaveCompiler.WorkCompleted( value ) =>
+      println("Work Done.")
+      workingQueue dequeueFirst ( value == _ ) match {
+        case Some( item ) =>
+          doneQueue enqueue item
+        case None =>
+          println("Work was not in progress. " + value.toString )
+      }
+
+      if( pendingQueue.isEmpty && workingQueue.isEmpty )
+      {
+        println("all done.")
+        notifyWhenDone foreach ( _ ! 'Done )
+      }
     case Join =>
       notifyWhenDone += sender
     case unknown =>
@@ -83,17 +100,18 @@ case class WeaveModule() extends AbstractModule {
 class WeaveCompiler @Inject() ( @Named("WeaveActor") val weaveActor:ActorRef ) {
 
   def compile( files:Seq[WeaveFile] ):Unit = {
-  implicit val timeout = Timeout(5 seconds)
-  val future = weaveActor ? WeaveActor.QueueFile( new NativeWeaveFile( new File("../samples/test3.silk"), "silk") )
+    implicit val timeout = Timeout(5 seconds)
+    weaveActor ! WeaveActor.QueueFile( new NativeWeaveFile( new File("../samples/test3.silk"), "silk") )
 
-  future onSuccess {
-      case Some('Done) => println("YAY")
-      case Some('Fail) => println("x.x")
-      case None => println(":(")
-      case _ => println("???")
+    val future = weaveActor ? WeaveActor.Join
+
+    try {
+      val result = Await.result( future, timeout.duration ).asInstanceOf[Any]
+    }
+    catch {
+      case unknown =>
+        println( "Exception while waiting: " + unknown )
     }
 
-    //FIXME
-    Thread.sleep(5000);
   }
 }

@@ -35,6 +35,7 @@ def timed[R](blockName:String)(block: =>R) = {
       val future = actor.ask( WeaveCompiler.RequestWork( source, target ) ).mapTo[WeaveCompiler.Work[WeaveFile]]
       val work = Await.result( future, timeout.duration )
       if(work != null) timed("Compiling")( compile( work.value ) )
+      sender ! WeaveCompiler.WorkCompleted( work.value )
   }
 
   def compile( file:WeaveFile ):Unit = {
