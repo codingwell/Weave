@@ -1,11 +1,7 @@
-
-parboiledVersion  = '1.0.2'
-
 dependencies {
    compile project(':core')
    
-   compile   "org.parboiled:parboiled-scala:$parboiledVersion",
-      libraries.guice
+   compile libraries.guice
 }
 
 // vim: syntax=groovy
