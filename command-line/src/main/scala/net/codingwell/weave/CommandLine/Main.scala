@@ -17,12 +17,16 @@ object Main {
 
    def main(args: Array[String]):Unit = {
 
+      print("Patience")
+
       //Load Config (Command Line)
       val config:WeaveConfig = new WeaveConfig()
       if( !CommandLineParser.parse( args, config ) ) return
 
       //Ansi console color proxy
       AnsiConsole.systemInstall( config.forcecolor )
+      
+      print(".")
 
       //Prepare Dependancy Injection
       val injector:Injector = Guice.createInjector(
@@ -35,6 +39,8 @@ object Main {
            }
          }
       )
+      
+      print(".")
 
       //Get the compiler
       var compiler:WeaveCompiler = injector.getInstance(classOf[WeaveCompiler])
@@ -42,6 +48,8 @@ object Main {
       val file = new NativeWeaveFile( new File("samples/newtest.silk"), "silk" )
 
       val files = List( file )
+
+      println(".")
 
       compiler.compile( files )
 
