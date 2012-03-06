@@ -6,22 +6,23 @@
 package net.codingwell.weave.languages.silk
 
 import net.codingwell.weave.languages.silk.exceptions._
+import net.codingwell.weave._
 
 class SilkType() {}
-
+/*
 trait ConnectionSignal {
   var signaltype:Option[SilkType] = None
 
   def doSomething():Unit = {
   }
 }
-
+*/
 /**
  * \brief This represents a logical wire.
  *
  * Note that it only refers to the signal and not the reciever. This is becuase the RTL is a tree steming from outputs and working back to
  * inputs.
-*/
+*//*
 class Connection () extends ConnectionSignal {
   var input :Option[ConnectionSignal] = None
 
@@ -35,7 +36,7 @@ class Connection () extends ConnectionSignal {
   }
 
   def isDriven() = { ! input.isEmpty }
-}
+}*/
 
 class ModuleInstance ( module:ModuleSymbol, lhs:ConnectionSignal, rhs:ConnectionSignal ) extends ConnectionSignal {}
 

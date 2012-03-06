@@ -7,6 +7,7 @@ package net.codingwell.weave.languages.silk
 
 import scala.collection.{ mutable => mu }
 import net.codingwell.weave.languages.silk.exceptions._
+import net.codingwell.weave._
 
 class SemanticStatement ( val scope:SymbolScope, val statement:ast.Statement ) {}
 
@@ -18,10 +19,9 @@ class SymbolLocator {
 
 class PackageRef {
 }
-
+/*
 class Symbol {
 }
-
 class ModuleParameters() {
   val orderedParameters = new mu.ArrayBuffer[Connection]
   val namedParameters = new mu.HashMap[String,Connection]
@@ -31,14 +31,16 @@ class ModuleParameters() {
     namedParameters += ( ( name, connection ) )
   }
 }
+*/
 
 case class ModulePendingSymbolics() {
   val statements = new mu.ArrayBuffer[SemanticStatement]
 }
 
-case class ModuleSymbol( val name:String, val parameters:ModuleParameters/*, val scope:SymbolScope*/ ) extends Symbol {
+/*
+case class ModuleSymbol( val name:String, val parameters:ModuleParameters ) extends Symbol {
 }
-
+*/
 object built_in {
   def get_&():ModuleSymbol = {
     val a = new Connection

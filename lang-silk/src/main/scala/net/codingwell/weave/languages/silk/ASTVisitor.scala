@@ -6,6 +6,7 @@
 package net.codingwell.weave.languages.silk
 
 import net.codingwell.weave.languages.silk.exceptions._
+import net.codingwell.weave._
 
 class ASTModuleVisitor ( val module:ModulePendingSymbolics, val mainvisitor:ASTRTLVisitor, val symbols:SymbolTable )
 {

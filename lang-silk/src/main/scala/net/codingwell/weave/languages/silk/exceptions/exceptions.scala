@@ -6,7 +6,7 @@
 package net.codingwell.weave.languages.silk.exceptions
 
 import net.codingwell.weave.languages.silk._
+import net.codingwell.weave.Symbol
 
 case class DuplicateSymbolException( name:String, newsymbol:Symbol, oldsymbol:Symbol ) extends Exception
-case class MultipleDriverException( connection:Connection, newsignal:ConnectionSignal, oldsignal:ConnectionSignal ) extends Exception
 case class InvalidDirectionException( direction:String ) extends Exception
