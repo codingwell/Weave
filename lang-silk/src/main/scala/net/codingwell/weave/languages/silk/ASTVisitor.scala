@@ -23,11 +23,11 @@ class ASTModuleVisitor ( val module:ModulePendingSymbolics, val mainvisitor:ASTR
           handleScope( scope )
         }
       case ast.Instantiation( typename, identifier ) =>
-        println( "   Instantiation " + identifier.name )
+        //println( "   Instantiation " + identifier.name )
         val decl = new DeclarationSymbol( new Connection() )
         symbols.getScope().addSymbol( identifier.name, decl )
       case statement @ ast.ExpressionStatement( body ) =>
-        println( "   ExpressionStatement: " + body )
+        //println( "   ExpressionStatement: " + body )
         module.statements += new SemanticStatement( symbols.getScope(), statement )
       case unknown =>
         mainvisitor visit unknown
@@ -45,7 +45,7 @@ class ASTRTLVisitor(val symbols:SymbolTable) {
 */
   def visit( file:ast.File ):Unit = {
     symbols.subScope {
-      println( "-File" )
+      //println( "-File" )
       file.members foreach ( visit _ )
     }
   }
@@ -62,7 +62,7 @@ class ASTRTLVisitor(val symbols:SymbolTable) {
       case ast.ImportViral( packageSpecification ) =>
         symbols.getScope().packages :+ new PackageRef
       case ast.Module( identifier, parameters, scope ) =>
-        println( "+-Module:" + identifier.toString )
+        //println( "+-Module:" + identifier.toString )
         val parentScope = symbols.getScope()
         symbols.subScope {
           val moduleparameters = new ModuleParameters()

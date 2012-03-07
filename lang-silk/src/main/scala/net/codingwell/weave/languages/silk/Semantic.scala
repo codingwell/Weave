@@ -68,7 +68,7 @@ class ExpressionModuleState( val machine:ExpressionStateMachine, val value:Conne
                 throw new Exception("Value followed by value")
               case Some( symbol @ ModuleSymbol( name, parameters ) ) =>
                 //TODO: Handle parameters
-                println( "ID is Module in Module State" )
+                //println( "ID is Module in Module State" )
                 machine.state = new ExpressionModuleHalfState( machine, symbol, value )
               case None =>
                 println( "No ID" )
@@ -100,10 +100,10 @@ class ExpressionModuleHalfState( val machine:ExpressionStateMachine, val module:
 
             symbol match {
               case Some( DeclarationSymbol( connection ) ) =>
-                println( "ID is Value in HalfState" )
+                //println( "ID is Value in HalfState" )
                 machine.state = new ExpressionModuleState( machine, new ModuleInstance( module, connection, rhs ) )
               case Some( ModuleSymbol( name, parameters ) ) =>
-                println( "ID is Module" )
+                //println( "ID is Module" )
                 throw new Exception("Value expected got module")
               case None =>
                 println( "No ID" )
@@ -112,7 +112,7 @@ class ExpressionModuleHalfState( val machine:ExpressionStateMachine, val module:
 
           case ast.ExpressionGroup( expressions ) =>
 
-            println( "Value State Group: " + expressions.toString() )
+            //println( "Value State Group: " + expressions.toString() )
             val submachine = new ExpressionStateMachine( machine.scope, machine.table )
             expressions.reverseIterator foreach ( submachine.processExpression _ )
             
@@ -144,7 +144,7 @@ class ExpressionValueState( val machine:ExpressionStateMachine, val value:Connec
                 throw new Exception("Value followed by value")
               case Some( symbol @ ModuleSymbol( name, parameters ) ) =>
                 //TODO: Handle parameters
-                println( "ID is Module" )
+                //println( "ID is Module" )
                 machine.state = new ExpressionModuleHalfState( machine, symbol, value )
               case None =>
                 println( "No ID" )
@@ -233,7 +233,7 @@ class Semantic ( table:SymbolTable ) {
     statement match {
       case ast.ExpressionStatement( group ) =>
         val expressions = group.expressions
-        println("Expression Group: " + expressions.toString )
+        println("")
 
         val machine = new ExpressionStateMachine( scope, table )
         expressions.reverseIterator foreach ( machine.processExpression _ )
