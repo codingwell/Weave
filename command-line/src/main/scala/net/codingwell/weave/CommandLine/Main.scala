@@ -10,6 +10,7 @@ import com.google.inject._
 import net.codingwell.jansi.AnsiConsole
 import net.codingwell.weave._
 import net.codingwell.weave.languages.silk._
+import net.codingwell.weave.languages.verilog._
 import java.io.File
 import akka.actor._
 
@@ -36,6 +37,7 @@ object Main {
          new AbstractModule() {
            def configure = {
              bind(classOf[ActorSystem]).toInstance( ActorSystem("WeaveSystem") )
+             bind(classOf[GeneratorVisitor]).to( classOf[VerilogGeneratorVisitor] )
            }
          }
       )

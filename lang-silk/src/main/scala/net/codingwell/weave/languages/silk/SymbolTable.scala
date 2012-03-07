@@ -5,7 +5,7 @@
 
 package net.codingwell.weave.languages.silk
 
-import scala.collection.{ mutable => mu }
+import scala.collection.{ mutable => mu, immutable => im }
 import net.codingwell.weave.languages.silk.exceptions._
 import net.codingwell.weave._
 
@@ -138,6 +138,7 @@ class SymbolScope( val parent:Option[SymbolScope] = None ) {
   }
 }
 
+//USe imutable vector
 class SymbolTable {
   var scope:Option[SymbolScope] = Some( new DefaultSymbolScope )
   val modules = new mu.ArrayBuffer[ModuleSymbol]
@@ -148,6 +149,8 @@ class SymbolTable {
   def subScope( body : => Unit ) = { pushScope; body; popScope }
   def getScope() = scope match { case Some(thisscope) => thisscope case None => throw new Exception("Missing Scope") }
   def addModule( module:ModuleSymbol, modulepending:ModulePendingSymbolics ) = { modules += module; modulespending += modulepending }
+
+  def getImmutableModules() = { im.Vector( modules: _* ) }
 }
 
 //Do not use, for later expansion

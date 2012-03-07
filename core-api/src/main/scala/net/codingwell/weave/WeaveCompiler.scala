@@ -16,7 +16,7 @@ import akka.pattern.{ ask, pipe }
 import akka.pattern.{ ask, pipe }
 import akka.dispatch.Await
 import scala.collection.JavaConversions._
-import scala.collection.mutable.{Set => MutableSet, Queue => MutableQueue, HashSet => MutableHashSet}
+import scala.collection.{ mutable => mu, immutable => im }
 
 object WeaveCompiler {
   //Incoming
@@ -24,7 +24,7 @@ object WeaveCompiler {
 
   //Outgoing
   case class RequestWork(val source:String, val target:String)
-  case class WorkCompleted[S](val value:S)
+  case class WorkCompleted[S](val value:S, val modules:im.Vector[ModuleSymbol] )
   
   case class Work[S](val value:S)
 
@@ -38,16 +38,23 @@ object WeaveActor {
 }
 import WeaveActor._
 
-class WeaveActor ( val executors:MutableSet[ActorRef] ) extends Actor {
-  @Inject() def this( @Named("Executors") executors:java.util.Set[ActorRef] ) = this( asScalaSet(executors) )
+trait GeneratorVisitor {
+  def generate( toplevel:ModuleSymbol ):Unit
+}
+
+class WeaveActor ( val executors:mu.Set[ActorRef], val generator:GeneratorVisitor ) extends Actor {
+  @Inject() def this( @Named("Executors") executors:java.util.Set[ActorRef], generator:GeneratorVisitor ) = this(
+  asScalaSet(executors), generator )
 
   class Work (val channel:ActorRef, val file:WeaveFile, val engine:ActorRef) {
   }
 
-  val pendingQueue = new MutableQueue[WeaveFile]
-  val workingQueue = new MutableQueue[WeaveFile]
-  val doneQueue = new MutableQueue[WeaveFile]
-  val notifyWhenDone = new MutableHashSet[ActorRef]
+  val pendingQueue = new mu.Queue[WeaveFile]
+  val workingQueue = new mu.Queue[WeaveFile]
+  val doneQueue = new mu.Queue[WeaveFile]
+  val notifyWhenDone = new mu.HashSet[ActorRef]
+
+  var modules = im.Vector[ModuleSymbol]()
 
   def receive = {
     case QueueFile(file) =>
@@ -62,18 +69,24 @@ class WeaveActor ( val executors:MutableSet[ActorRef] ) extends Actor {
       }
       else
         sender ! null
-    case WeaveCompiler.WorkCompleted( value ) =>
+    case WeaveCompiler.WorkCompleted( value, modules ) =>
       println("Work Done.")
       workingQueue dequeueFirst ( value == _ ) match {
         case Some( item ) =>
           doneQueue enqueue item
+          this.modules = this.modules ++ modules
         case None =>
           println("Work was not in progress. " + value.toString )
       }
 
       if( pendingQueue.isEmpty && workingQueue.isEmpty )
       {
-        println("all done.")
+        println("Done Parsing.")
+        println("Starting Generation")
+
+        //FIXME: Find toplevel
+        generator.generate( modules.head )
+
         notifyWhenDone foreach ( _ ! 'Done )
       }
     case Join =>

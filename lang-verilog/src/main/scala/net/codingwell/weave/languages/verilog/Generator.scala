@@ -5,8 +5,12 @@
 
 package net.codingwell.weave.languages.verilog
 
-class GeneratorVisitor () {
+import net.codingwell.weave._
 
-  
+class VerilogGeneratorVisitor() extends GeneratorVisitor {
+
+  def generate( toplevel:ModuleSymbol ):Unit = {
+    
+  }
 
 }

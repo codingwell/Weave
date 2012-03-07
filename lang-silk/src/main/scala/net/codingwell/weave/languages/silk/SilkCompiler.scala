@@ -18,7 +18,7 @@ import akka.pattern.{ ask, pipe }
 import akka.util.Timeout
 import akka.util.duration._
 
-import scala.collection.mutable.{Map => MutableMap}
+import scala.collection.{ mutable => mu, immutable => im }
 
 class SilkCompiler extends Actor {
 def timed[R](blockName:String)(block: =>R) = {
@@ -34,11 +34,18 @@ def timed[R](blockName:String)(block: =>R) = {
       implicit val timeout = Timeout(5 seconds)
       val future = actor.ask( WeaveCompiler.RequestWork( source, target ) ).mapTo[WeaveCompiler.Work[WeaveFile]]
       val work = Await.result( future, timeout.duration )
-      if(work != null) timed("Compiling")( compile( work.value ) )
-      sender ! WeaveCompiler.WorkCompleted( work.value )
+      if(work != null)
+      {
+        val modules = timed("Compiling")( compile( work.value ) )
+        modules match {
+          case Some( vector ) =>
+            sender ! WeaveCompiler.WorkCompleted( work.value, vector )
+          case None =>
+        }
+      }
   }
 
-  def compile( file:WeaveFile ):Unit = {
+  def compile( file:WeaveFile ):Option[im.Vector[ModuleSymbol]] = {
     val start = System.currentTimeMillis
 
     val buffer = new IncludableInputBuffer[String]
@@ -60,6 +67,7 @@ def timed[R](blockName:String)(block: =>R) = {
     {
       System.out.println("Parse Errors:\n"
         + ErrorUtils.printParseErrors(Arrays.asList( result.parseErrors.toArray : _* ),buffer));
+      return None
     }
     else
     {
@@ -72,10 +80,12 @@ def timed[R](blockName:String)(block: =>R) = {
           timed("Visiting")( visitor visit file )
           val semantic = new Semantic( symboltable )
           timed("Semantic")( semantic.process )
+          return Some( symboltable.getImmutableModules )
         case _ => throw new Error("Slik AST missing")
       }
     }
     println( ":: " + (System.currentTimeMillis - start) )
+    return None
   }
 
   def supportedLanguages() = Set("Silk")
