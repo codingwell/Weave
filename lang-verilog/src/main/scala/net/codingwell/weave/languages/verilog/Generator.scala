@@ -39,13 +39,29 @@ class VerilogGeneratorVisitor() extends GeneratorVisitor {
     toplevel.parameters.namedParameters foreach { case (k,v) => {
       println("Parameter: " + k)
       if( v.isDriven ) {
-        processOutput( v )
+        processOutput( v, symbolTable )
       }
     }}
   }
 
-  def processOutput( connection:Connection ) = {
-    println( connection )
+  def processOutput( connection:Connection, symbolTable:SymbolTable ) = {
+    handleSignal( connection, symbolTable )
+  }
+
+  def handleSignal( connectionSignal:ConnectionSignal, symbolTable:SymbolTable ):Unit = {
+    connectionSignal match {
+      case connection @ Connection() =>
+        println("Connection assigned symbol: " + symbolTable.generateIdentifier)
+
+        connection.input match {
+          case Some( signal ) =>
+            handleSignal( signal, symbolTable )
+          case None =>
+            println( "ERR: Connection has no signal!" )
+        }
+      case unknown =>
+        println("Unknown ConnectionSignal: " + unknown)
+    }
   }
 
 }

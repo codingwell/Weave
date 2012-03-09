@@ -26,7 +26,7 @@ trait ConnectionSignal {
  * Note that it only refers to the signal and not the reciever. This is becuase the RTL is a tree steming from outputs and working back to
  * inputs.
 */
-class Connection () extends ConnectionSignal {
+case class Connection () extends ConnectionSignal {
   var input :Option[ConnectionSignal] = None
 
   def connectSignal( signal:ConnectionSignal ) = {
