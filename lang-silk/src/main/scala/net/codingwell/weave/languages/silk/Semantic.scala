@@ -38,9 +38,9 @@ class Connection () extends ConnectionSignal {
   def isDriven() = { ! input.isEmpty }
 }*/
 
-class ModuleInstance ( module:ModuleSymbol, lhs:ConnectionSignal, rhs:ConnectionSignal ) extends ConnectionSignal {}
+//class ModuleInstance ( module:ModuleSymbol, lhs:ConnectionSignal, rhs:ConnectionSignal ) extends ConnectionSignal {}
 
-class TemporaryConnection () extends ConnectionSignal {}
+//class TemporaryConnection () extends ConnectionSignal {}
 
 class Gate_XOR ( val a:ConnectionSignal, val b:ConnectionSignal ) extends ConnectionSignal { }
 class Gate_AND ( val a:ConnectionSignal, val b:ConnectionSignal ) extends ConnectionSignal { }
@@ -101,7 +101,25 @@ class ExpressionModuleHalfState( val machine:ExpressionStateMachine, val module:
             symbol match {
               case Some( DeclarationSymbol( connection ) ) =>
                 //println( "ID is Value in HalfState" )
-                machine.state = new ExpressionModuleState( machine, new ModuleInstance( module, connection, rhs ) )
+                val instance = new ModuleInstance( module )
+                //FIXME: This doesn't handle "ret"
+                val aModuleParameter = module.parameters.orderedParameters(0)
+                aModuleParameter.direction match {
+                  case "in"    =>
+                    instance.inputs += ( ( aModuleParameter.signal, connection ) )
+                  case "out"   =>
+                    connection.connectSignal( new ModuleConnection( instance,  aModuleParameter.signal ) )
+                  case unknown =>
+                    throw InvalidDirectionException(unknown)
+                }
+                val bModuleParameter = module.parameters.orderedParameters(1)
+                bModuleParameter.direction match {
+                  case "in"    =>
+                    instance.inputs += ( ( aModuleParameter.signal, rhs ) )
+                  case unknown =>
+                    throw InvalidDirectionException(unknown)
+                }
+                machine.state = new ExpressionModuleState( machine, new ModuleConnection( instance, module.parameters.orderedParameters(2).signal ) )
               case Some( ModuleSymbol( name, parameters ) ) =>
                 //println( "ID is Module" )
                 throw new Exception("Value expected got module")
@@ -115,8 +133,24 @@ class ExpressionModuleHalfState( val machine:ExpressionStateMachine, val module:
             //println( "Value State Group: " + expressions.toString() )
             val submachine = new ExpressionStateMachine( machine.scope, machine.table )
             expressions.reverseIterator foreach ( submachine.processExpression _ )
-            
-            machine.state = new ExpressionModuleState( machine, new ModuleInstance( module, submachine.getValue, rhs ) )
+
+            val instance = new ModuleInstance( module )
+            //FIXME: This doesn't handle "ret"
+            val aModuleParameter = module.parameters.orderedParameters(0)
+            aModuleParameter.direction match {
+              case "in"    =>
+                instance.inputs += ( ( aModuleParameter.signal, submachine.getValue ) )
+              case unknown =>
+                throw InvalidDirectionException(unknown)
+            }
+            val bModuleParameter = module.parameters.orderedParameters(1)
+            bModuleParameter.direction match {
+              case "in"    =>
+                instance.inputs += ( ( aModuleParameter.signal, rhs ) )
+              case unknown =>
+                throw InvalidDirectionException(unknown)
+            }
+            machine.state = new ExpressionModuleState( machine, new ModuleConnection( instance, module.parameters.orderedParameters(2).signal ) )
 
           case unknown =>
             println( "Value State Unknown: " + unknown.toString() )

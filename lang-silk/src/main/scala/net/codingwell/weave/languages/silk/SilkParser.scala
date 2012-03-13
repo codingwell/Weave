@@ -28,7 +28,7 @@ class SilkParser(val buffer: IncludableInputBuffer[String]) extends Parser
   def Module = rule { "module" ~ WhiteSpace ~ Identifier ~ OWhiteSpace ~ zeroOrMore(ModuleParameter) ~ Scope ~~> ast.Module }
   def ModuleParameter = rule { Direction ~ WhiteSpace ~ TypeSpecification ~ WhiteSpace ~ Identifier ~ OWhiteSpace ~ SEMI ~~> ast.Parameter }
 
-  def Direction = rule { ("in" | "out") ~> ast.Direction }
+  def Direction = rule { ("in" | "out" | "ref" | "ret") ~> ast.Direction }
   def TypeSpecification = rule { PlainType }
   def PlainType = rule { Identifier ~~> ast.PlainType }
   def LiteralType = rule { WhiteSpace }//TODO

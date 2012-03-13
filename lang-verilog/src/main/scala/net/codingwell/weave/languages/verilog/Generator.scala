@@ -38,14 +38,10 @@ class VerilogGeneratorVisitor() extends GeneratorVisitor {
 
     toplevel.parameters.namedParameters foreach { case (k,v) => {
       println("Parameter: " + k)
-      if( v.isDriven ) {
-        processOutput( v, symbolTable )
+      if( (v.direction equals "out") || (v.direction equals "ret") ) {
+        handleSignal( v.signal, symbolTable )
       }
     }}
-  }
-
-  def processOutput( connection:Connection, symbolTable:SymbolTable ) = {
-    handleSignal( connection, symbolTable )
   }
 
   def handleSignal( connectionSignal:ConnectionSignal, symbolTable:SymbolTable ):Unit = {

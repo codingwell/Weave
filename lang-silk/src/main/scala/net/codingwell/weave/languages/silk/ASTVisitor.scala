@@ -96,19 +96,20 @@ class ASTRTLVisitor(val symbols:SymbolTable) {
   def handleParameter( parameter:ast.Parameter, moduleparameters:ModuleParameters ):Unit = {
 
     //We use this to enforce the directionality
-    val connectionin = new Connection()
-    val connectionout = new Connection()
-    connectionout.connectSignal( connectionin )
     val (moduleconnection, scopeconnection) = parameter.direction.value match {
       case "in"    =>
+        val connectionin = new ModuleInput()
+        val connectionout = new Connection()
+        connectionout.connectSignal( connectionin )
         ( connectionin, connectionout )
       case "out"   =>
-        ( connectionout, connectionin )
+        val connection = new Connection()
+        ( connection, connection )
       case unknown =>
         throw InvalidDirectionException(unknown)
     }
 
     symbols.getScope().addSymbol( parameter.identifier.name, DeclarationSymbol( scopeconnection ) )
-    moduleparameters.appendParameter( parameter.identifier.name, moduleconnection )
+    moduleparameters.appendParameter( parameter.identifier.name, ModuleParameter( parameter.direction.value, moduleconnection ) )
   }
 }

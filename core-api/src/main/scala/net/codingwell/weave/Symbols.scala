@@ -41,13 +41,27 @@ case class Connection () extends ConnectionSignal {
   def isDriven() = { ! input.isEmpty }
 }
 
-class ModuleParameters() {
-  val orderedParameters = new mu.ArrayBuffer[Connection]
-  val namedParameters = new mu.HashMap[String,Connection]
+case class ModuleInput () extends ConnectionSignal {}
 
-  def appendParameter( name:String, connection:Connection ) = {
-    orderedParameters += connection
-    namedParameters += ( ( name, connection ) )
+class ModuleInstance ( module:ModuleSymbol ) {
+//TODO: The key should really be a ModuleInput, but we currently don't have access to that type without extending ModuleParameter to be
+//direction specific
+  val inputs = new mu.HashMap[ConnectionSignal,ConnectionSignal]
+}
+
+class ModuleConnection( instance:ModuleInstance, instanceConnection:ConnectionSignal ) extends ConnectionSignal {
+
+}
+
+case class ModuleParameter( direction:String, signal:ConnectionSignal )
+
+class ModuleParameters() {
+  val orderedParameters = new mu.ArrayBuffer[ModuleParameter]
+  val namedParameters = new mu.HashMap[String,ModuleParameter]
+
+  def appendParameter( name:String, parameter:ModuleParameter ) = {
+    orderedParameters += parameter
+    namedParameters += ( ( name, parameter ) )
   }
 }
 

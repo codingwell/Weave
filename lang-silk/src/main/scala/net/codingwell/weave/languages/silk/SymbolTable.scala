@@ -49,9 +49,9 @@ object built_in {
     result.connectSignal( new Gate_AND( a, b ) )
 
     val parameters = new ModuleParameters
-    parameters.appendParameter( "a", a )
-    parameters.appendParameter( "b", b )
-    parameters.appendParameter( "result", result )
+    parameters.appendParameter( "a", ModuleParameter("in", a) )
+    parameters.appendParameter( "b", ModuleParameter("in", b) )
+    parameters.appendParameter( "result", ModuleParameter("ret", result) )
 
     new ModuleSymbol( "&", parameters )
   }
@@ -62,9 +62,9 @@ object built_in {
     result.connectSignal( new Gate_OR( a, b ) )
 
     val parameters = new ModuleParameters
-    parameters.appendParameter( "a", a )
-    parameters.appendParameter( "b", b )
-    parameters.appendParameter( "result", result )
+    parameters.appendParameter( "a", ModuleParameter("in", a) )
+    parameters.appendParameter( "b", ModuleParameter("in", b) )
+    parameters.appendParameter( "result", ModuleParameter("ret", result) )
 
     new ModuleSymbol( "|", parameters )
   }
@@ -75,9 +75,9 @@ object built_in {
     result.connectSignal( new Gate_XOR( a, b ) )
 
     val parameters = new ModuleParameters
-    parameters.appendParameter( "a", a )
-    parameters.appendParameter( "b", b )
-    parameters.appendParameter( "result", result )
+    parameters.appendParameter( "a", ModuleParameter("in", a) )
+    parameters.appendParameter( "b", ModuleParameter("in", b) )
+    parameters.appendParameter( "result", ModuleParameter("ret", result) )
 
     new ModuleSymbol( "^", parameters )
   }
@@ -88,9 +88,9 @@ object built_in {
     a.connectSignal( b )
 
     val parameters = new ModuleParameters
-    parameters.appendParameter( "a", a )
-    parameters.appendParameter( "b", b )
-    parameters.appendParameter( "result", a )
+    parameters.appendParameter( "a", ModuleParameter("out", a) )
+    parameters.appendParameter( "b", ModuleParameter("in", b) )
+    parameters.appendParameter( "result", ModuleParameter("ret", a) )
 
     new ModuleSymbol( "=", parameters )
   }
