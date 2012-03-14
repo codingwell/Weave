@@ -64,7 +64,7 @@ class VerilogGeneratorVisitor() extends GeneratorVisitor {
     state.genout += ");\n\n"
 
     outputs foreach { v =>
-      handleSignal( v.signal )( state, im.List( topInstance ) )
+      handleSignal( v.name, v.signal )( state, im.List( topInstance ) )
     }
     
     state.genout += "endmodule"
@@ -74,43 +74,66 @@ class VerilogGeneratorVisitor() extends GeneratorVisitor {
     println( "\n\n" )
   }
 
-  def handleSignal(connectionSignal:ConnectionSignal)( implicit state:GeneratorState, moduleStack:im.List[ModuleInstance] ):Unit = {
+  def handleSignal(target:String, connectionSignal:ConnectionSignal)( implicit state:GeneratorState, moduleStack:im.List[ModuleInstance] ):Unit = {
     connectionSignal match {
       case connection @ Connection() =>
-        println("Connection assigned symbol: " + state.generateIdentifier)
-
         connection.input match {
           case Some( signal ) =>
-            handleSignal( signal )
+            handleSignal( target, signal )
           case None =>
             println( "ERR: Connection has no signal!" )
         }
+
       case ModuleConnection( instance, instanceConnection ) =>
-        println("Module Connection (" + instance.module.name + ") assigned symbol: " + state.generateIdentifier)
-        handleSignal( instanceConnection )( state, instance :: moduleStack )
+        println("Module Connection (" + instance.module.name + ")")
+        handleSignal( target, instanceConnection )( state, instance :: moduleStack )
+
       case moduleInput @ ModuleInput(name) =>
         val instance = moduleStack.head
         println("Module: " + instance.module.name + "  Input: " + name )
         instance.inputs lift ( moduleInput ) match {
           case Some( signal ) =>
-            handleSignal( signal )( state, moduleStack drop 1 )
+            handleSignal( target, signal )( state, moduleStack drop 1 )
           case None =>
             throw new Exception("Input is not connected")
         }
+
       case Gate_OR( a, b ) =>
         println( "OR-GATE" )
-        handleSignal( a )
-        handleSignal( b )
+        val idA = state.generateIdentifier
+        val idB = state.generateIdentifier
+        state.genout += "\n"
+        state.genout += "\t" + "wire " + idA + ";\n"
+        state.genout += "\t" + "wire " + idB + ";\n"
+        state.genout += "\t" + "assign " + target + " = " + idA + " | " + idB + ";\n"
+        handleSignal( idA, a )
+        handleSignal( idB, b )
+
       case Gate_AND( a, b ) =>
         println( "AND-GATE" )
-        handleSignal( a )
-        handleSignal( b )
+        val idA = state.generateIdentifier
+        val idB = state.generateIdentifier
+        state.genout += "\n"
+        state.genout += "\t" + "wire " + idA + ";\n"
+        state.genout += "\t" + "wire " + idB + ";\n"
+        state.genout += "\t" + "assign " + target + " = " + idA + " & " + idB + ";\n"
+        handleSignal( idA, a )
+        handleSignal( idB, b )
+
       case Gate_XOR( a, b ) =>
         println( "XOR-GATE" )
-        handleSignal( a )
-        handleSignal( b )
+        val idA = state.generateIdentifier
+        val idB = state.generateIdentifier
+        state.genout += "\n"
+        state.genout += "\t" + "wire " + idA + ";\n"
+        state.genout += "\t" + "wire " + idB + ";\n"
+        state.genout += "\t" + "assign " + target + " = " + idA + " ^ " + idB + ";\n"
+        handleSignal( idA, a )
+        handleSignal( idB, b )
+
       case TopLevelInput( name ) =>
         println( "Traced ouptut to toplevel input: " + name )
+        state.genout += "\t" + "assign " + target + " = " + name + ";\n"
       case unknown =>
         println("** Unknown ConnectionSignal: " + unknown)
     }
