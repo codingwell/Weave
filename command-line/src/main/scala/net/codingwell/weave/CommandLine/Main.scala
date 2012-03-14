@@ -53,7 +53,8 @@ object Main {
 
       println(".")
 
-      compiler.compile( files )
+      Timed("Total Compilation")( compiler.compile( files ) )
+      println("Done Compiling...")
 
       var system:ActorSystem = injector.getInstance(classOf[ActorSystem])
       system shutdown

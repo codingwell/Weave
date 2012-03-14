@@ -19,6 +19,9 @@ trait ConnectionSignal {
   def doSomething():Unit = {
   }
 }
+case class Gate_XOR ( val a:ConnectionSignal, val b:ConnectionSignal ) extends ConnectionSignal { }
+case class Gate_AND ( val a:ConnectionSignal, val b:ConnectionSignal ) extends ConnectionSignal { }
+case class Gate_OR  ( val a:ConnectionSignal, val b:ConnectionSignal ) extends ConnectionSignal { }
 
 /**
  * \brief This represents a logical wire.
@@ -41,27 +44,25 @@ case class Connection () extends ConnectionSignal {
   def isDriven() = { ! input.isEmpty }
 }
 
-case class ModuleInput () extends ConnectionSignal {}
+case class ModuleInput ( val name:String ) extends ConnectionSignal {}
 
-class ModuleInstance ( module:ModuleSymbol ) {
+class ModuleInstance ( val module:ModuleSymbol ) {
 //TODO: The key should really be a ModuleInput, but we currently don't have access to that type without extending ModuleParameter to be
 //direction specific
   val inputs = new mu.HashMap[ConnectionSignal,ConnectionSignal]
 }
 
-class ModuleConnection( instance:ModuleInstance, instanceConnection:ConnectionSignal ) extends ConnectionSignal {
+case class ModuleConnection( instance:ModuleInstance, instanceConnection:ConnectionSignal ) extends ConnectionSignal {}
 
-}
-
-case class ModuleParameter( direction:String, signal:ConnectionSignal )
+case class ModuleParameter( name:String, direction:String, signal:ConnectionSignal )
 
 class ModuleParameters() {
   val orderedParameters = new mu.ArrayBuffer[ModuleParameter]
   val namedParameters = new mu.HashMap[String,ModuleParameter]
 
-  def appendParameter( name:String, parameter:ModuleParameter ) = {
+  def appendParameter( parameter:ModuleParameter ) = {
     orderedParameters += parameter
-    namedParameters += ( ( name, parameter ) )
+    namedParameters += ( ( parameter.name, parameter ) )
   }
 }
 

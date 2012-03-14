@@ -13,7 +13,7 @@ module fulladder
    sum = s1^ c_in;
    c_out = ( a & b ) | (s1&c_in);
 }
-
+/*
 module halfadder
  in  bit a;
  in  bit b;
@@ -22,4 +22,4 @@ module halfadder
 {
    sum = a ^ b;
    c_out = a & b;
-}
+}*/

@@ -110,6 +110,16 @@ case class WeaveModule() extends AbstractModule {
 
 }
 
+object Timed {
+
+  def apply[R](blockName:String)(block: =>R) = {
+  val start = System.currentTimeMillis
+    val result = block
+      println("Block (" + blockName + ") took " + (System.currentTimeMillis - start) + "ms.")
+        result
+        }
+}
+
 class WeaveCompiler @Inject() ( @Named("WeaveActor") val weaveActor:ActorRef ) {
 
   def compile( files:Seq[WeaveFile] ):Unit = {

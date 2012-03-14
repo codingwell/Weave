@@ -43,54 +43,54 @@ case class ModuleSymbol( val name:String, val parameters:ModuleParameters ) exte
 */
 object built_in {
   def get_&():ModuleSymbol = {
-    val a = new Connection
-    val b = new Connection
+    val a = new ModuleInput("a")
+    val b = new ModuleInput("b")
     val result = new Connection
     result.connectSignal( new Gate_AND( a, b ) )
 
     val parameters = new ModuleParameters
-    parameters.appendParameter( "a", ModuleParameter("in", a) )
-    parameters.appendParameter( "b", ModuleParameter("in", b) )
-    parameters.appendParameter( "result", ModuleParameter("ret", result) )
+    parameters.appendParameter( ModuleParameter("a", "in", a) )
+    parameters.appendParameter( ModuleParameter("b", "in", b) )
+    parameters.appendParameter( ModuleParameter("result", "ret", result) )
 
     new ModuleSymbol( "&", parameters )
   }
   def get_|():ModuleSymbol = {
-    val a = new Connection
-    val b = new Connection
+    val a = new ModuleInput("a")
+    val b = new ModuleInput("b")
     val result = new Connection
     result.connectSignal( new Gate_OR( a, b ) )
 
     val parameters = new ModuleParameters
-    parameters.appendParameter( "a", ModuleParameter("in", a) )
-    parameters.appendParameter( "b", ModuleParameter("in", b) )
-    parameters.appendParameter( "result", ModuleParameter("ret", result) )
+    parameters.appendParameter( ModuleParameter("a", "in", a) )
+    parameters.appendParameter( ModuleParameter("b", "in", b) )
+    parameters.appendParameter( ModuleParameter("result", "ret", result) )
 
     new ModuleSymbol( "|", parameters )
   }
   def get_^():ModuleSymbol = {
-    val a = new Connection
-    val b = new Connection
+    val a = new ModuleInput("a")
+    val b = new ModuleInput("b")
     val result = new Connection
     result.connectSignal( new Gate_XOR( a, b ) )
 
     val parameters = new ModuleParameters
-    parameters.appendParameter( "a", ModuleParameter("in", a) )
-    parameters.appendParameter( "b", ModuleParameter("in", b) )
-    parameters.appendParameter( "result", ModuleParameter("ret", result) )
+    parameters.appendParameter( ModuleParameter("a", "in", a) )
+    parameters.appendParameter( ModuleParameter("b", "in", b) )
+    parameters.appendParameter( ModuleParameter("result", "ret", result) )
 
     new ModuleSymbol( "^", parameters )
   }
   def get_=():ModuleSymbol = {
     val a = new Connection
-    val b = new Connection
+    val b = new ModuleInput("b")
 
     a.connectSignal( b )
 
     val parameters = new ModuleParameters
-    parameters.appendParameter( "a", ModuleParameter("out", a) )
-    parameters.appendParameter( "b", ModuleParameter("in", b) )
-    parameters.appendParameter( "result", ModuleParameter("ret", a) )
+    parameters.appendParameter( ModuleParameter("a", "out", a) )
+    parameters.appendParameter( ModuleParameter("b", "in", b) )
+    parameters.appendParameter( ModuleParameter("result", "ret", a) )
 
     new ModuleSymbol( "=", parameters )
   }

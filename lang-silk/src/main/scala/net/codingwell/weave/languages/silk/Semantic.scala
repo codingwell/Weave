@@ -42,9 +42,6 @@ class Connection () extends ConnectionSignal {
 
 //class TemporaryConnection () extends ConnectionSignal {}
 
-class Gate_XOR ( val a:ConnectionSignal, val b:ConnectionSignal ) extends ConnectionSignal { }
-class Gate_AND ( val a:ConnectionSignal, val b:ConnectionSignal ) extends ConnectionSignal { }
-class Gate_OR  ( val a:ConnectionSignal, val b:ConnectionSignal ) extends ConnectionSignal { }
 
 trait ExpressionState
 {
@@ -106,6 +103,7 @@ class ExpressionModuleHalfState( val machine:ExpressionStateMachine, val module:
                 val aModuleParameter = module.parameters.orderedParameters(0)
                 aModuleParameter.direction match {
                   case "in"    =>
+                    println( "Connecting lhs on Module: " + module.name + "  Input: " + aModuleParameter.name + "  Signal: " + aModuleParameter.signal  + '@' + Integer.toHexString(hashCode()) )
                     instance.inputs += ( ( aModuleParameter.signal, connection ) )
                   case "out"   =>
                     connection.connectSignal( new ModuleConnection( instance,  aModuleParameter.signal ) )
@@ -115,7 +113,8 @@ class ExpressionModuleHalfState( val machine:ExpressionStateMachine, val module:
                 val bModuleParameter = module.parameters.orderedParameters(1)
                 bModuleParameter.direction match {
                   case "in"    =>
-                    instance.inputs += ( ( aModuleParameter.signal, rhs ) )
+                    println( "Connecting rhs on Module: " + module.name + "  Input: " + bModuleParameter.name+ "  Signal: " + bModuleParameter.signal  + '@' + Integer.toHexString(hashCode()) )
+                    instance.inputs += ( ( bModuleParameter.signal, rhs ) )
                   case unknown =>
                     throw InvalidDirectionException(unknown)
                 }
@@ -146,7 +145,7 @@ class ExpressionModuleHalfState( val machine:ExpressionStateMachine, val module:
             val bModuleParameter = module.parameters.orderedParameters(1)
             bModuleParameter.direction match {
               case "in"    =>
-                instance.inputs += ( ( aModuleParameter.signal, rhs ) )
+                instance.inputs += ( ( bModuleParameter.signal, rhs ) )
               case unknown =>
                 throw InvalidDirectionException(unknown)
             }
