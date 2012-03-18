@@ -1,7 +1,9 @@
 apply plugin: 'scala'
 
 dependencies {
+   compile libraries.guava
    compile libraries.guice
+   compile libraries.guice_multibindings
    compile libraries.commons_io
    compile libraries.akka_actor
 }

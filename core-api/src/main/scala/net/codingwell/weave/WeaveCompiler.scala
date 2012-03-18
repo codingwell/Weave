@@ -42,9 +42,7 @@ trait GeneratorVisitor {
   def generate( toplevel:ModuleSymbol ):Unit
 }
 
-class WeaveActor ( val executors:mu.Set[ActorRef], val generator:GeneratorVisitor ) extends Actor {
-  @Inject() def this( @Named("Executors") executors:java.util.Set[ActorRef], generator:GeneratorVisitor ) = this(
-  asScalaSet(executors), generator )
+class WeaveActor @Inject() ( @Named("Executors") val executors:im.Set[ActorRef], val generator:GeneratorVisitor ) extends Actor {
 
   class Work (val channel:ActorRef, val file:WeaveFile, val engine:ActorRef) {
   }

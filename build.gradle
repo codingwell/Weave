@@ -9,6 +9,8 @@ allprojects {
 }
 
 libraries = [
+   scala_guice: 'uk.me.lings:scala-guice_2.9.0-1:0.1',
+   guava: 'com.google.guava:guava:11.0.1',
    guice: 'com.google.inject:guice:3.0',
    guice_multibindings: 'com.google.inject.extensions:guice-multibindings:3.0',
    commons_io: 'commons-io:commons-io:2.1',
@@ -20,6 +22,7 @@ subprojects {
 
    repositories {
       mavenCentral()
+      mavenRepo name:'jenkins-scala-guice', url:'http://ci.codingwell.net/job/Scala-Guice/lastSuccessfulBuild/artifact/repo/'
       mavenRepo name:'scala-releases', url:'http://scala-tools.org/repo-releases/'
       mavenRepo name:'Akka Maven Repository', url:'http://akka.io/repository'
    }

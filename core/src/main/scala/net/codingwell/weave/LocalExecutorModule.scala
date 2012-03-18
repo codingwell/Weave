@@ -14,7 +14,7 @@ import akka.actor._
 case class LocalExecutorModule() extends AbstractModule {
 
   def configure() = {
-    val executorbinder = Multibinder.newSetBinder( binder(), classOf[ActorRef], Names.named("Executors") )
+    val executorbinder = ScalaMultibinder.newSetBinder( binder(), classOf[ActorRef], Names.named("Executors") )
 
     executorbinder.addBinding().toProvider( new TypeLiteral[ActorProvider[LocalExecutor]]() {} )
   }

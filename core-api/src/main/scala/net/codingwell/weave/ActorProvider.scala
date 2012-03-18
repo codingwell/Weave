@@ -6,11 +6,17 @@
 
 package net.codingwell.weave
 
+import com.google.common.collect.ImmutableSet
 import com.google.inject._
+import com.google.inject.spi._
 import akka.actor._
 
-class ActorProvider[T <: Actor] @Inject() ( val m:TypeLiteral[T], val system:ActorSystem, val injector:Injector ) extends Provider[ActorRef] {
+class ActorProvider[T <: Actor] @Inject() ( val m:TypeLiteral[T], val system:ActorSystem, val injector:Injector ) extends ProviderWithDependencies[ActorRef] {
   def get = {
     system.actorOf( Props( injector.getInstance( Key.get( m ) ) ) )
+  }
+
+  def getDependencies() = {
+    ImmutableSet.of( Dependency.get( Key.get( m ) ) )
   }
 }
