@@ -4,30 +4,31 @@ allprojects {
    group='net.codingwell.weave'
 
    apply plugin: 'eclipse'
-   sourceCompatibility = JavaVersion.VERSION_1_6
    eclipse.classpath.containers += ["org.scala-ide.sdt.launching.SCALA_CONTAINER"]
 }
 
-libraries = [
-   scala_guice: 'uk.me.lings:scala-guice_2.9.0-1:0.1',
+ext.libraries = [
+   scala_guice: 'uk.me.lings:scala-guice_2.9.0-1:0.2-SNAPSHOT',
    guava: 'com.google.guava:guava:11.0.1',
    guice: 'com.google.inject:guice:3.0',
    guice_multibindings: 'com.google.inject.extensions:guice-multibindings:3.0',
    commons_io: 'commons-io:commons-io:2.1',
-   akka_actor: 'com.typesafe.akka:akka-actor:2.0-RC1'
+   akka_actor: 'com.typesafe.akka:akka-actor:2.0',
+   parboiled: 'org.parboiled:parboiled-scala:1.0.2'
 ]
 
 subprojects {
    apply plugin: 'scala'
-
+   sourceCompatibility = JavaVersion.VERSION_1_6
+   
    repositories {
       mavenCentral()
       mavenRepo name:'jenkins-scala-guice', url:'http://ci.codingwell.net/job/Scala-Guice/lastSuccessfulBuild/artifact/repo/'
       mavenRepo name:'scala-releases', url:'http://scala-tools.org/repo-releases/'
-      mavenRepo name:'Akka Maven Repository', url:'http://akka.io/repository'
+      mavenRepo name:'Akka Maven Repository', url:'http://repo.typesafe.com/typesafe/releases'
    }
 
-   scalaVersion      = '2.9.1'
+   ext.scalaVersion      = '2.9.1'
 
    dependencies {
       scalaTools "org.scala-lang:scala-compiler:$scalaVersion",

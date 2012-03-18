@@ -1,6 +1,4 @@
 
-parboiledVersion  = '1.0.2'
-
 dependencies {
    compile project(':core-api')
    

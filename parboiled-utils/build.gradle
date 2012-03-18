@@ -1,8 +1,6 @@
 
-parboiledVersion  = '1.0.2'
-
-dependencies {   
-   compile   "org.parboiled:parboiled-scala:$parboiledVersion"
+dependencies {
+   compile libraries.parboiled
 }
 
 // vim: syntax=groovy

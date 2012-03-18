@@ -1,6 +1,7 @@
 apply plugin: 'scala'
 
 dependencies {
+   compile libraries.scala_guice
    compile libraries.guava
    compile libraries.guice
    compile libraries.guice_multibindings

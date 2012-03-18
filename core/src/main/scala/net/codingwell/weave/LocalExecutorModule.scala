@@ -11,6 +11,8 @@ import com.google.inject.name._
 import com.google.inject.multibindings._
 import akka.actor._
 
+import uk.me.lings.scalaguice._
+
 case class LocalExecutorModule() extends AbstractModule {
 
   def configure() = {

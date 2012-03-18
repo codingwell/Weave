@@ -1,11 +1,9 @@
 
-parboiledVersion  = '1.0.2'
-
 dependencies {
    compile project(':core')
    compile project(':parboiled-utils')
    
-   compile "org.parboiled:parboiled-scala:$parboiledVersion"
+   compile libraries.parboiled
    compile libraries.guice, libraries.guice_multibindings
 }
 
