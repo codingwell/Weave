@@ -20,7 +20,7 @@ case class SilkCompilerModule() extends AbstractModule {
   def configure() = {
     val compilerbinder = ScalaMultibinder.newSetBinder( binder(), classOf[ActorRef], Names.named("LangCompilers") )
 
-    compilerbinder.addBinding().toProvider( new TypeLiteral[ActorProvider[SilkCompiler]]() {} )
+    compilerbinder.addBinding().toProvider[ActorProvider[SilkCompiler]]
   }
 
 }

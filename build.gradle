@@ -8,7 +8,7 @@ allprojects {
 }
 
 ext.libraries = [
-   scala_guice: 'uk.me.lings:scala-guice_2.9.0-1:0.2-SNAPSHOT',
+   scala_guice: 'uk.me.lings:scala-guice_2.9.1:3.0.1-SNAPSHOT',
    guava: 'com.google.guava:guava:11.0.1',
    guice: 'com.google.inject:guice:3.0',
    guice_multibindings: 'com.google.inject.extensions:guice-multibindings:3.0',
