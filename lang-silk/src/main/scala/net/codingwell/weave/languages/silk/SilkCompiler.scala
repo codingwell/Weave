@@ -5,6 +5,7 @@
 
 package net.codingwell.weave.languages.silk
 
+import com.google.inject._
 import java.util.Arrays
 import org.parboiled.scala.ParsingResult.unwrap
 import org.parboiled.scala.parserunners.RecoveringParseRunner
@@ -20,15 +21,7 @@ import akka.util.duration._
 
 import scala.collection.{ mutable => mu, immutable => im }
 
-class SilkCompiler extends Actor {
-def timed[R](blockName:String)(block: =>R) = {
-  val start = System.currentTimeMillis
-    val result = block
-      println("Block (" + blockName + ") took " + (System.currentTimeMillis - start) + "ms.")
-        result
-        }
-//  val map = new MutableMap[UntypedChannel,String]
-
+class SilkCompiler @Inject() (profiler:Profiler) extends Actor {
   def receive = {
     case WeaveCompiler.NotifyWork(actor, source,target) =>
       implicit val timeout = Timeout(5 seconds)
@@ -36,7 +29,7 @@ def timed[R](blockName:String)(block: =>R) = {
       val work = Await.result( future, timeout.duration )
       if(work != null)
       {
-        val modules = timed("Compiling")( compile( work.value ) )
+        val modules = profiler.time("Compiling")( compile( work.value ) )
         modules match {
           case Some( vector ) =>
             sender ! WeaveCompiler.WorkCompleted( work.value, vector )
@@ -46,10 +39,11 @@ def timed[R](blockName:String)(block: =>R) = {
   }
 
   def compile( file:WeaveFile ):Option[im.Vector[ModuleSymbol]] = {
+    profiler.time("Silk Phase") {
     val start = System.currentTimeMillis
 
     val buffer = new IncludableInputBuffer[String]
-    timed("Stripping")( buffer.include(0, Preprocessor.StripComments( file.contents ), file.name, 0) )//Load the first file
+    profiler.time("Stripping")( buffer.include(0, Preprocessor.StripComments( file.contents ), file.name, 0) )//Load the first file
     println( ":1: " + (System.currentTimeMillis - start) )
 
     val parser = new net.codingwell.weave.languages.silk.SilkParser(buffer)
@@ -60,7 +54,7 @@ def timed[R](blockName:String)(block: =>R) = {
     val input = new Input( null, (A:Array[Char]) => buffer ) //Forces the use of our buffer
     println( ":4: " + (System.currentTimeMillis - start) )
 
-    val result = timed("Parsing")( parserunner.run( input ) )
+    val result = profiler.time("Parsing")( parserunner.run( input ) )
     println( ":5: " + (System.currentTimeMillis - start) )
 
     if( result.hasErrors() )
@@ -77,15 +71,16 @@ def timed[R](blockName:String)(block: =>R) = {
         case Some(file:ast.File) =>
           val symboltable = new SymbolTable
           val visitor = new ASTRTLVisitor( symboltable )
-          timed("Visiting")( visitor visit file )
+          profiler.time("Visiting")( visitor visit file )
           val semantic = new Semantic( symboltable )
-          timed("Semantic")( semantic.process )
+          profiler.time("Semantic")( semantic.process )
           return Some( symboltable.getImmutableModules )
         case _ => throw new Error("Slik AST missing")
       }
     }
     println( ":: " + (System.currentTimeMillis - start) )
     return None
+    }
   }
 
   def supportedLanguages() = Set("Silk")

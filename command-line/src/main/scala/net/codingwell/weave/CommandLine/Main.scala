@@ -7,6 +7,8 @@
 package net.codingwell.weave.CommandLine
 
 import com.google.inject._
+import uk.me.lings.scalaguice._
+
 import net.codingwell.jansi.AnsiConsole
 import net.codingwell.weave._
 import net.codingwell.weave.languages.silk._
@@ -34,10 +36,11 @@ object Main {
          LocalExecutorModule(),
          SilkCompilerModule(),
          WeaveModule(),
-         new AbstractModule() {
+         new AbstractModule with ScalaModule {
            def configure = {
-             bind(classOf[ActorSystem]).toInstance( ActorSystem("WeaveSystem") )
-             bind(classOf[GeneratorVisitor]).to( classOf[VerilogGeneratorVisitor] )
+             bind[ActorSystem].toInstance( ActorSystem("WeaveSystem") )
+             bind[GeneratorVisitor].to[VerilogGeneratorVisitor]
+             bind[Profiler].to[LoggingProfiler]
            }
          }
       )
@@ -45,18 +48,24 @@ object Main {
       print(".")
 
       //Get the compiler
-      var compiler:WeaveCompiler = injector.getInstance(classOf[WeaveCompiler])
+      var app:Application = injector.getInstance(classOf[Application])
+      app.run
+   }
+}
+
+
+class Application @Inject() ( compiler:WeaveCompiler, profiler:Profiler, system:ActorSystem ) {
+  def run() = {
+      println(".")
 
       val file = new NativeWeaveFile( new File("samples/newtest.silk"), "silk" )
 
       val files = List( file )
 
-      println(".")
+      profiler.time("Total Compilation")( compiler.compile( files ) )
 
-      Timed("Total Compilation")( compiler.compile( files ) )
-      println("Done Compiling...")
-
-      var system:ActorSystem = injector.getInstance(classOf[ActorSystem])
       system shutdown
-   }
+
+      println( profiler.get )
+  }
 }
