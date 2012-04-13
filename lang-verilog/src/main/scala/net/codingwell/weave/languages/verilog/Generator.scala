@@ -26,7 +26,7 @@ class GeneratorState () {
     
     identifierSalt = identifierSalt + 1
 
-    "_$_WEAVE_$__GEN__" + id.toString
+    "_$_" + id.toString
   }
 }
 

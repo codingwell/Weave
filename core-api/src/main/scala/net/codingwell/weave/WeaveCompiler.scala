@@ -112,7 +112,8 @@ class WeaveCompiler @Inject() ( @Named("WeaveActor") val weaveActor:ActorRef ) {
 
   def compile( files:Seq[WeaveFile] ):Unit = {
     implicit val timeout = Timeout(5 seconds)
-    weaveActor ! WeaveActor.QueueFile( new NativeWeaveFile( new File("../samples/test3.silk"), "silk") )
+    //TODO: This only compiles first file
+    weaveActor ! WeaveActor.QueueFile( files.head )
 
     val future = weaveActor ? WeaveActor.Join
 

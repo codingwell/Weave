@@ -50,41 +50,6 @@ trait ExpressionState
   def getValue():ConnectionSignal
 }
 
-class ExpressionModuleState( val machine:ExpressionStateMachine, val value:ConnectionSignal ) extends ExpressionState {
-  def processExpression( expression:ast.Expression ) = {
-    expression.next match {
-      case None =>
-        expression.simple match {
-          case ast.Identifier( name ) =>
-            println( "Value State ID: " + name )
-
-            val symbol = machine.scope.lookup( name )
-
-            symbol match {
-              case Some( DeclarationSymbol( connection ) ) =>
-                throw new Exception("Value followed by value")
-              case Some( symbol @ ModuleSymbol( name, parameters ) ) =>
-                //TODO: Handle parameters
-                //println( "ID is Module in Module State" )
-                machine.state = new ExpressionModuleHalfState( machine, symbol, value )
-              case None =>
-                println( "No ID" )
-            }
-
-
-          case ast.ExpressionGroup( expressions ) =>
-            throw new Exception("Module expected got group")
-          case unknown =>
-            println( "Value State Unknown: " + unknown.toString() )
-        }
-      case _ =>
-        println("Chain Expressions not implemented." )
-    }
-  }
-
-  def getValue() = { value }
-}
-
 class ExpressionModuleHalfState( val machine:ExpressionStateMachine, val module:ModuleSymbol, val rhs:ConnectionSignal ) extends ExpressionState {
   def processExpression( expression:ast.Expression ) = {
     expression.next match {
@@ -118,7 +83,7 @@ class ExpressionModuleHalfState( val machine:ExpressionStateMachine, val module:
                   case unknown =>
                     throw InvalidDirectionException(unknown)
                 }
-                machine.state = new ExpressionModuleState( machine, new ModuleConnection( instance, module.parameters.orderedParameters(2).signal ) )
+                machine.state = new ExpressionValueState( machine, new ModuleConnection( instance, module.parameters.orderedParameters(2).signal ) )
               case Some( ModuleSymbol( name, parameters ) ) =>
                 //println( "ID is Module" )
                 throw new Exception("Value expected got module")
@@ -149,7 +114,7 @@ class ExpressionModuleHalfState( val machine:ExpressionStateMachine, val module:
               case unknown =>
                 throw InvalidDirectionException(unknown)
             }
-            machine.state = new ExpressionModuleState( machine, new ModuleConnection( instance, module.parameters.orderedParameters(2).signal ) )
+            machine.state = new ExpressionValueState( machine, new ModuleConnection( instance, module.parameters.orderedParameters(2).signal ) )
 
           case unknown =>
             println( "Value State Unknown: " + unknown.toString() )

@@ -98,7 +98,7 @@ object built_in {
 
 //This isn't right, but right concept
 //Maybe move the statements into another class, we don't really seem to ever refer to the module from them anyway.
-class AssignmentModuleSymbol( parameters:ModuleParameters ) extends ModuleSymbol( "", parameters )
+//class AssignmentModuleSymbol( parameters:ModuleParameters ) extends ModuleSymbol( "", parameters )
 
 case class DeclarationSymbol( val connection:Connection ) extends Symbol {
 }

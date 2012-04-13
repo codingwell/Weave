@@ -49,16 +49,16 @@ object Main {
 
       //Get the compiler
       var app:Application = injector.getInstance(classOf[Application])
-      app.run
+      app.run( config.toplevel )
    }
 }
 
 
 class Application @Inject() ( compiler:WeaveCompiler, profiler:Profiler, system:ActorSystem ) {
-  def run() = {
+  def run( filename:String ) = {
       println(".")
 
-      val file = new NativeWeaveFile( new File("samples/newtest.silk"), "silk" )
+      val file = new NativeWeaveFile( new File( filename ), "silk" )
 
       val files = List( file )
 
