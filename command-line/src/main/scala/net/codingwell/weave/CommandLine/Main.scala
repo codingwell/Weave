@@ -15,6 +15,7 @@ import net.codingwell.weave.languages.silk._
 import net.codingwell.weave.languages.verilog._
 import java.io.File
 import akka.actor._
+import com.typesafe.config.ConfigFactory
 
 object Main {
 
@@ -28,7 +29,9 @@ object Main {
 
       //Ansi console color proxy
       AnsiConsole.systemInstall( config.forcecolor )
-      
+
+      val system = ActorSystem("WeaveSystem", ConfigFactory.empty("Empty Actor Config") )
+
       print(".")
 
       //Prepare Dependancy Injection
@@ -38,13 +41,13 @@ object Main {
          WeaveModule(),
          new AbstractModule with ScalaModule {
            def configure = {
-             bind[ActorSystem].toInstance( ActorSystem("WeaveSystem") )
+             bind[ActorSystem].toInstance( system )
              bind[GeneratorVisitor].to[VerilogGeneratorVisitor]
              bind[Profiler].to[LoggingProfiler]
            }
          }
       )
-      
+
       print(".")
 
       //Get the compiler

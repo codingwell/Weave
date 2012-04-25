@@ -15,13 +15,8 @@ import akka.actor._
 class LocalExecutor @Inject() ( @Named("LangCompilers") val compilers:im.Set[ActorRef] ) extends Actor {
   def receive = {
     case msg @ WeaveCompiler.NotifyWork(actor,source,target) =>
-      //println("Msg: " + source + target)
       compilers foreach ( _.forward(msg) )
     case unknown =>
       println(this.toString() + " recieved unexpected message.")
-  }
-
-  override def postStop() = {
-    compilers foreach ( _ ! PoisonPill )
   }
 }
