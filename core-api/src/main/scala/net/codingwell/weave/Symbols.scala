@@ -13,11 +13,21 @@ class Symbol { }
 
 class ConnectionType { }
 
-trait ConnectionSignal {
+trait ConnectionSignal extends Equals {
   var signaltype:Option[ConnectionType] = None
 
   def doSomething():Unit = {
   }
+
+  override def hashCode = 41 + signaltype.hashCode
+  override def canEqual( other:Any ) = other.isInstanceOf[ConnectionSignal]
+/*  override def equals( other:Any ) = other match {
+    case that: ConnectionSignal =>
+      (that canEqual this) &&
+        signaltype == that.signaltype
+    case _ =>
+      false
+  }*/
 }
 case class Gate_XOR ( val a:ConnectionSignal, val b:ConnectionSignal ) extends ConnectionSignal { }
 case class Gate_AND ( val a:ConnectionSignal, val b:ConnectionSignal ) extends ConnectionSignal { }
@@ -42,14 +52,37 @@ case class Connection () extends ConnectionSignal {
   }
 
   def isDriven() = { ! input.isEmpty }
+
+  override def hashCode = 41 * (
+                            41 + super.hashCode
+                          ) + input.hashCode
+  override def canEqual( other:Any ) = other.isInstanceOf[Connection]
+  override def equals( other:Any ) = other match {
+    case that: Connection =>
+      super.equals( that ) &&
+        input == that.input
+    case _ =>
+      false
+  }
 }
 
 case class ModuleInput ( val name:String ) extends ConnectionSignal {}
 
-class ModuleInstance ( val module:ModuleSymbol ) {
+final class ModuleInstance ( val module:ModuleSymbol ) {
 //TODO: The key should really be a ModuleInput, but we currently don't have access to that type without extending ModuleParameter to be
 //direction specific
   val inputs = new mu.HashMap[ConnectionSignal,ConnectionSignal]
+
+  override def hashCode = 41 * (
+                            41 + module.hashCode
+                          ) + inputs.hashCode
+  override def equals( other:Any ) = other match {
+    case that: ModuleInstance =>
+        module == that.module &&
+        inputs == that.inputs
+    case _ =>
+      false
+  }
 }
 
 case class ModuleConnection( instance:ModuleInstance, instanceConnection:ConnectionSignal ) extends ConnectionSignal {}

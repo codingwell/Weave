@@ -30,6 +30,10 @@ class GeneratorState () {
   }
 }
 
+class GeneratorStackState ( val parent:GeneratorStackState, val instance:ModuleInstance ) {
+  val visitedSignals = new mu.HashMap[ConnectionSignal,String]
+}
+
 case class TopLevelInput ( val name:String ) extends ConnectionSignal {}
 
 class VerilogGeneratorVisitor() extends GeneratorVisitor {
@@ -64,7 +68,7 @@ class VerilogGeneratorVisitor() extends GeneratorVisitor {
     state.genout += ");\n\n"
 
     outputs foreach { v =>
-      handleSignal( v.name, v.signal )( state, im.List( topInstance ) )
+      handleSignal( v.name, v.signal )( state, new GeneratorStackState( null, topInstance ) )
     }
     
     state.genout += "endmodule"
@@ -74,7 +78,22 @@ class VerilogGeneratorVisitor() extends GeneratorVisitor {
     println( "\n\n" )
   }
 
-  def handleSignal(target:String, connectionSignal:ConnectionSignal)( implicit state:GeneratorState, moduleStack:im.List[ModuleInstance] ):Unit = {
+  def handleSignal(target:String, connectionSignal:ConnectionSignal)( implicit state:GeneratorState, moduleStack:GeneratorStackState ):Unit = {
+
+    if( moduleStack != null ) {
+      moduleStack.visitedSignals.get( connectionSignal ) match {
+        case Some( signal ) =>
+          println( "Redundancy detected, connecting " + target + " = " + signal )
+          state.genout += "\n"
+          state.genout += "\t" + "assign " + target + " = " + signal + ";\n"
+          return
+        case None =>
+          if( ! connectionSignal.isInstanceOf[Connection] ) {//Optimization
+            moduleStack.visitedSignals += ( (connectionSignal,target) )
+          }
+      }
+    }
+
     connectionSignal match {
       case connection @ Connection() =>
         connection.input match {
@@ -86,14 +105,14 @@ class VerilogGeneratorVisitor() extends GeneratorVisitor {
 
       case ModuleConnection( instance, instanceConnection ) =>
         println("Module Connection (" + instance.module.name + ")")
-        handleSignal( target, instanceConnection )( state, instance :: moduleStack )
+        handleSignal( target, instanceConnection )( state, new GeneratorStackState( moduleStack, instance ) )
 
       case moduleInput @ ModuleInput(name) =>
-        val instance = moduleStack.head
+        val instance = moduleStack.instance
         println("Module: " + instance.module.name + "  Input: " + name )
         instance.inputs lift ( moduleInput ) match {
           case Some( signal ) =>
-            handleSignal( target, signal )( state, moduleStack drop 1 )
+            handleSignal( target, signal )( state, moduleStack.parent )
           case None =>
             throw new Exception("Input is not connected")
         }
