@@ -17,7 +17,8 @@ import akka.actor._
 import akka.dispatch._
 import akka.pattern.{ ask, pipe }
 import akka.util.Timeout
-import akka.util.duration._
+import scala.concurrent.duration._
+import scala.concurrent.Await
 
 import scala.collection.{ mutable => mu, immutable => im }
 

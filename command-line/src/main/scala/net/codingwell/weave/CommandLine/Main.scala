@@ -7,7 +7,7 @@
 package net.codingwell.weave.CommandLine
 
 import com.google.inject._
-import uk.me.lings.scalaguice._
+import net.codingwell.scalaguice._
 
 import net.codingwell.jansi.AnsiConsole
 import net.codingwell.weave._

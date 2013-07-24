@@ -10,7 +10,7 @@ import net.codingwell.weave._
 
 import com.google.inject._
 import com.google.inject.name._
-import uk.me.lings.scalaguice._
+import net.codingwell.scalaguice._
 
 import scala.collection.{ mutable => mu, immutable => im }
 

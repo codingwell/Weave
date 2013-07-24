@@ -11,10 +11,10 @@ import com.google.inject.name._
 import java.io.File
 import akka.actor._
 import akka.util.Timeout
-import akka.util.duration._
+import scala.concurrent.duration._
 import akka.pattern.{ ask, pipe }
 import akka.pattern.{ ask, pipe }
-import akka.dispatch.Await
+import scala.concurrent.Await
 import scala.collection.JavaConversions._
 import scala.collection.{ mutable => mu, immutable => im }
 
@@ -25,7 +25,7 @@ object WeaveCompiler {
   //Outgoing
   case class RequestWork(val source:String, val target:String)
   case class WorkCompleted[S](val value:S, val modules:im.Vector[ModuleSymbol] )
-  
+
   case class Work[S](val value:S)
 
   //case class Compile( file:WeaveFile )
@@ -111,7 +111,7 @@ case class WeaveModule() extends AbstractModule {
 class WeaveCompiler @Inject() ( @Named("WeaveActor") val weaveActor:ActorRef ) {
 
   def compile( files:Seq[WeaveFile] ):Unit = {
-    implicit val timeout = Timeout(5 seconds)
+    implicit val timeout:Timeout = Timeout(5 seconds)
     //TODO: This only compiles first file
     weaveActor ! WeaveActor.QueueFile( files.head )
 
@@ -121,7 +121,7 @@ class WeaveCompiler @Inject() ( @Named("WeaveActor") val weaveActor:ActorRef ) {
       val result = Await.result( future, timeout.duration ).asInstanceOf[Any]
     }
     catch {
-      case unknown =>
+      case unknown:Throwable =>
         println( "Exception while waiting: " + unknown )
     }
 
